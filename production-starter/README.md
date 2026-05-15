@@ -19,6 +19,35 @@ http://localhost:8080
 http://localhost:8080/admin.html
 ```
 
+## Deploy on Vercel
+
+Use `production-starter/` as the Vercel Root Directory. The `vercel.json` in this folder adapts the existing Node server to one Vercel Node function and preserves the public website, admin portal, static assets, and `/api/...` routes.
+
+Recommended project settings:
+
+```txt
+Framework Preset: Other
+Root Directory: production-starter
+Build Command: npm run build
+Output Directory: leave empty
+Install Command: npm install
+Node.js Version: 20.x or newer
+```
+
+Set these environment variables before production traffic:
+
+```txt
+PUBLIC_ORIGIN=https://your-domain.example
+ADMIN_EMAIL=owner@example.com
+ADMIN_PASSWORD_HASH=pbkdf2_sha256$...
+ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
+BUSINESS_NAME=TISATO Transportation Services INC
+DISPATCH_EMAIL=info@tisatotransportationservices.com
+DISPATCH_PHONE=+18448847286
+```
+
+On Vercel, the starter defaults `DATA_DIR` to `/tmp/tisato-data` so file writes work inside serverless functions. That storage is ephemeral and can reset between function instances. For real production booking history, replace the JSON storage layer with a managed database or set `DATA_DIR` only on hosting that provides persistent server storage.
+
 For production, generate a password hash:
 
 ```bash

@@ -6,51 +6,73 @@
   <title>TISATO Admin Portal</title>
   <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="/">
-      <img src="/assets/tisato-logo-header.png" alt="TISATO Transportation Services">
-    </a>
-    <nav class="nav">
-      <a href="/">Public Site</a>
-      <button id="logoutButton" class="text-button" type="button" hidden>Log Out</button>
-    </nav>
-  </header>
+<body class="admin-reference-body">
+  <main class="admin-reference-shell live-admin-shell">
+    <aside class="admin-side-nav">
+      <a class="admin-logo-link" href="/" aria-label="TISATO public site">
+        <img src="/assets/tisato-logo-stacked.png" alt="TISATO Transportation Services">
+      </a>
+      <nav>
+        <a class="active" href="#queue">Booking Queue</a>
+        <a href="/">Public Site</a>
+        <a href="/thank-you">Confirmation</a>
+        <button id="logoutButton" class="side-nav-button" type="button" hidden>Log Out</button>
+      </nav>
+    </aside>
 
-  <main class="admin-shell">
-    <section class="admin-hero">
-      <p class="eyebrow">Protected Dispatch Portal</p>
-      <h1>Review booking requests, update trip status, and trigger passenger notifications.</h1>
-    </section>
-
-    <section id="loginPanel" class="admin-card">
-      <h2>Admin Login</h2>
-      <p>Set <code>ADMIN_PASSWORD_HASH</code> before production launch. For local demos, <code>ADMIN_PASSWORD</code> may be used.</p>
-      <form id="loginForm" class="booking-form compact-form">
-        <label>
-          Admin email
-          <input name="email" type="email" autocomplete="username" required>
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" autocomplete="current-password" required>
-        </label>
-        <button class="button primary" type="submit">Log In</button>
-        <p id="loginMessage" class="form-message" role="status"></p>
-      </form>
-    </section>
-
-    <section id="dashboardPanel" class="admin-card" hidden>
-      <div class="dashboard-head">
+    <section class="admin-main-panel">
+      <header class="admin-topbar">
         <div>
-          <p class="eyebrow">Operations</p>
-          <h2>Booking Queue</h2>
+          <p class="overline">Dispatch operations</p>
+          <h1>Admin portal.</h1>
         </div>
-        <button id="refreshButton" class="button secondary" type="button">Refresh</button>
-      </div>
-      <div id="metrics" class="metric-grid"></div>
-      <div id="bookingTable" class="booking-table"></div>
-      <p id="dashboardMessage" class="form-message" role="status"></p>
+        <div class="admin-operator">
+          <span>Protected area</span>
+          <strong>TISATO Dispatch</strong>
+        </div>
+      </header>
+
+      <section id="loginPanel" class="queue-panel login-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="overline">Admin login</p>
+            <h2>Access the booking queue.</h2>
+          </div>
+        </div>
+        <p>
+          Use the configured admin credentials. Production deployments should use
+          <code>ADMIN_PASSWORD_HASH</code> and a long <code>ADMIN_SESSION_SECRET</code>.
+        </p>
+        <form id="loginForm" class="booking-form compact-form">
+          <label>
+            Admin email
+            <input name="email" type="email" autocomplete="username" required>
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="button primary" type="submit">Log In</button>
+          <p id="loginMessage" class="form-message" role="status"></p>
+        </form>
+      </section>
+
+      <section id="dashboardPanel" hidden>
+        <section class="metric-row" id="metrics"></section>
+        <section class="admin-workspace" id="queue">
+          <div class="queue-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="overline">Today</p>
+                <h2>Booking queue</h2>
+              </div>
+              <button id="refreshButton" class="button ghost small" type="button">Refresh</button>
+            </div>
+            <div id="bookingTable" class="booking-table"></div>
+            <p id="dashboardMessage" class="form-message" role="status"></p>
+          </div>
+        </section>
+      </section>
     </section>
   </main>
 

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Booking Flow Visual Reference | TISATO</title>
+  <meta name="description" content="Booking flow visual reference for TISATO Transportation Services.">
+  <link rel="stylesheet" href="assets/css/visual-reference.css">
+</head>
+<body>
+  <header class="reference-header compact">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/img/tisato-logo-header.png" alt="TISATO Transportation Services">
+    </a>
+    <nav class="reference-nav">
+      <a href="homepage-reference.html">Homepage</a>
+      <a href="admin-portal-reference.html">Admin</a>
+      <a href="email-reference.html">Emails</a>
+      <a href="index.html">Hub</a>
+    </nav>
+  </header>
+
+  <main class="app-reference-shell">
+    <aside class="flow-sidebar">
+      <p class="overline">Booking reference</p>
+      <h1>Ride request flow.</h1>
+      <p>
+        A calm multi-step intake gives passengers confidence while still collecting the operational
+        details dispatch needs.
+      </p>
+      <ol class="flow-steps" data-step-list>
+        <li class="active" data-step-target="passenger">Passenger</li>
+        <li data-step-target="trip">Trip details</li>
+        <li data-step-target="mobility">Mobility</li>
+        <li data-step-target="review">Review</li>
+      </ol>
+    </aside>
+
+    <section class="booking-flow-stage">
+      <div class="flow-toolbar">
+        <div>
+          <span>Booking ID preview</span>
+          <strong>TISATO-MAY-2048</strong>
+        </div>
+        <a class="button ghost small" href="admin-portal-reference.html">Admin view</a>
+      </div>
+
+      <div class="flow-card active" data-step-panel="passenger">
+        <p class="overline">Step 1</p>
+        <h2>Passenger details</h2>
+        <div class="reference-form-grid">
+          <label>First name<input value="Maria"></label>
+          <label>Last name<input value="Johnson"></label>
+          <label>Phone<input value="844-884-7286"></label>
+          <label>Email<input value="maria@example.com"></label>
+        </div>
+      </div>
+
+      <div class="flow-card" data-step-panel="trip">
+        <p class="overline">Step 2</p>
+        <h2>Trip details</h2>
+        <div class="reference-form-grid">
+          <label>Pickup date<input value="May 20, 2026"></label>
+          <label>Pickup time<input value="8:45 AM"></label>
+          <label class="wide-field">Pickup address<input value="1824 Pine Ridge Drive, Orlando, FL"></label>
+          <label class="wide-field">Drop-off address<input value="Central Dialysis Care, Orlando, FL"></label>
+        </div>
+      </div>
+
+      <div class="flow-card" data-step-panel="mobility">
+        <p class="overline">Step 3</p>
+        <h2>Mobility and support</h2>
+        <div class="mobility-grid">
+          <button class="choice-card active" type="button">Wheelchair</button>
+          <button class="choice-card" type="button">Ambulatory</button>
+          <button class="choice-card active" type="button">Companion</button>
+          <button class="choice-card" type="button">Oxygen</button>
+          <button class="choice-card" type="button">Stairs</button>
+          <button class="choice-card active" type="button">Round trip</button>
+        </div>
+      </div>
+
+      <div class="flow-card" data-step-panel="review">
+        <p class="overline">Step 4</p>
+        <h2>Review and submit</h2>
+        <div class="review-panel">
+          <div><span>Passenger</span><strong>Maria Johnson</strong></div>
+          <div><span>Trip</span><strong>Home to Central Dialysis Care</strong></div>
+          <div><span>Support</span><strong>Wheelchair, companion, round trip</strong></div>
+          <div><span>Status</span><strong>Ready for dispatch review</strong></div>
+        </div>
+      </div>
+
+      <div class="flow-actions">
+        <button class="button ghost" type="button" data-prev-step>Previous</button>
+        <button class="button primary" type="button" data-next-step>Next Step</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/visual-reference.js" type="module"></script>
+</body>
+</html>

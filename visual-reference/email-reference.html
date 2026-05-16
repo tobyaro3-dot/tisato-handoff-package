@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Automation Visual Reference | TISATO</title>
+  <meta name="description" content="Email automation visual reference for TISATO booking workflows.">
+  <link rel="stylesheet" href="assets/css/visual-reference.css">
+</head>
+<body>
+  <header class="reference-header compact">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/img/tisato-logo-header.png" alt="TISATO Transportation Services">
+    </a>
+    <nav class="reference-nav">
+      <a href="homepage-reference.html">Homepage</a>
+      <a href="booking-flow-reference.html">Booking</a>
+      <a href="admin-portal-reference.html">Admin</a>
+      <a href="index.html">Hub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="email-hero">
+      <div>
+        <p class="overline">Email automation</p>
+        <h1>Transactional emails that match the website and support the booking workflow.</h1>
+      </div>
+      <p>
+        These references show the visual treatment for system-generated messages. Production code can connect
+        the templates to Resend, SendGrid, Postmark, or another provider.
+      </p>
+    </section>
+
+    <section class="email-stage">
+      <aside class="email-selector">
+        <button class="active" type="button" data-email-tab="dispatch">Dispatch alert</button>
+        <button type="button" data-email-tab="confirmation">Passenger confirmation</button>
+        <button type="button" data-email-tab="status">Status update</button>
+      </aside>
+
+      <div class="email-preview active" data-email-panel="dispatch">
+        <div class="email-shell">
+          <div class="email-header">
+            <img src="assets/img/tisato-logo-stacked.png" alt="TISATO">
+            <span>New Booking Request</span>
+          </div>
+          <div class="email-body">
+            <p class="email-pill">Dispatch review needed</p>
+            <h2>Maria Johnson requested wheelchair transportation.</h2>
+            <p>A new request is ready for review in the admin portal. Confirm availability, timing, and mobility requirements before notifying the passenger.</p>
+            <table>
+              <tr><td>Pickup</td><td>May 20, 2026 at 8:45 AM</td></tr>
+              <tr><td>Route</td><td>Home pickup to Central Dialysis Care</td></tr>
+              <tr><td>Support</td><td>Wheelchair, companion, round trip</td></tr>
+              <tr><td>Phone</td><td>844-884-7286</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="email-preview" data-email-panel="confirmation">
+        <div class="email-shell">
+          <div class="email-header">
+            <img src="assets/img/tisato-logo-stacked.png" alt="TISATO">
+            <span>Request Received</span>
+          </div>
+          <div class="email-body">
+            <p class="email-pill">We received your request</p>
+            <h2>Thank you, Maria. TISATO is reviewing your ride details.</h2>
+            <p>Dispatch will confirm availability and contact you if any additional details are needed.</p>
+            <table>
+              <tr><td>Booking ID</td><td>TISATO-MAY-2048</td></tr>
+              <tr><td>Pickup</td><td>May 20, 2026 at 8:45 AM</td></tr>
+              <tr><td>Service</td><td>Wheelchair transportation</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="email-preview" data-email-panel="status">
+        <div class="email-shell">
+          <div class="email-header">
+            <img src="assets/img/tisato-logo-stacked.png" alt="TISATO">
+            <span>Booking Update</span>
+          </div>
+          <div class="email-body">
+            <p class="email-pill confirmed">Confirmed</p>
+            <h2>Your TISATO ride has been confirmed.</h2>
+            <p>Your transportation request is confirmed. Please be ready at the pickup location before the scheduled pickup window.</p>
+            <table>
+              <tr><td>Pickup</td><td>May 20, 2026 at 8:45 AM</td></tr>
+              <tr><td>Destination</td><td>Central Dialysis Care</td></tr>
+              <tr><td>Questions?</td><td>Call 844-884-7286</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="reference-footer">
+    <p>Email visual reference for rebuild alignment.</p>
+    <a href="index.html">Back to visual reference hub</a>
+  </footer>
+
+  <script src="assets/js/visual-reference.js" type="module"></script>
+</body>
+</html>

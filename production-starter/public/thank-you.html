@@ -6,17 +6,32 @@
   <title>Booking Request Received | TISATO</title>
   <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-<body class="center-page">
-  <main class="success-card">
-    <img src="/assets/tisato-logo-stacked.png" alt="TISATO Transportation Services">
-    <p class="eyebrow">Request received</p>
-    <h1>Your booking request has been submitted.</h1>
-    <p>Dispatch can now review this request in the admin portal. Confirmation emails are written to the server outbox for provider integration.</p>
-    <p class="booking-id">Booking ID: <span id="bookingId">Pending</span></p>
-    <div class="hero-actions compact">
-      <a class="button primary" href="/">Submit Another Request</a>
-      <a class="button secondary" href="/admin.html">Open Admin Portal</a>
-    </div>
+<body>
+  <div class="ambient ambient-one"></div>
+  <main class="success-reference-page">
+    <section class="email-shell success-card">
+      <div class="email-header">
+        <img src="/assets/tisato-logo-stacked.png" alt="TISATO">
+        <span>Request Received</span>
+      </div>
+      <div class="email-body">
+        <p class="email-pill confirmed">Booking request received</p>
+        <h1>Your transportation request has been submitted.</h1>
+        <p>
+          Dispatch can now review this request in the admin portal. Confirmation messages are queued
+          for provider integration.
+        </p>
+        <table>
+          <tr><td>Booking ID</td><td id="bookingId">Pending</td></tr>
+          <tr><td>Status</td><td>Waiting for dispatch review</td></tr>
+          <tr><td>Questions?</td><td>Call 844-884-7286</td></tr>
+        </table>
+        <div class="button-row">
+          <a class="button primary" href="/">Submit Another Request</a>
+          <a class="button ghost" href="/admin">Open Admin Portal</a>
+        </div>
+      </div>
+    </section>
   </main>
   <script>
     const params = new URLSearchParams(window.location.search);

@@ -4,70 +4,162 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TISATO Transportation Services</title>
-  <meta name="description" content="Non-emergency medical transportation booking starter for TISATO Transportation Services.">
+  <meta name="description" content="Care-focused non-emergency medical transportation booking for TISATO Transportation Services.">
   <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="/">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="reference-header">
+    <a class="brand-lockup" href="/" aria-label="TISATO Transportation Services home">
       <img src="/assets/tisato-logo-header.png" alt="TISATO Transportation Services">
     </a>
-    <nav class="nav">
+    <nav class="reference-nav" aria-label="Primary navigation">
       <a href="#services">Services</a>
+      <a href="#process">Process</a>
       <a href="#booking">Book a Ride</a>
-      <a href="/admin.html">Admin</a>
+      <a href="/thank-you">Confirmation</a>
+      <a href="/admin">Admin</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Professional transportation coordination</p>
-        <h1>Reliable medical transportation requests with a real booking workflow behind it.</h1>
-        <p class="lead">This starter app captures ride requests, stores them server-side, queues admin and passenger email files, and gives dispatch a protected admin portal.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#booking">Request Transportation</a>
-          <a class="button secondary" href="tel:+18448847286">Call 844-884-7286</a>
+    <section class="site-hero">
+      <div class="site-hero-copy">
+        <p class="overline">Central Florida medical transportation</p>
+        <h1>Care-focused transportation that feels calm before the ride even starts.</h1>
+        <p class="hero-lede">
+          TISATO helps passengers, families, clinics, and care coordinators request dependable
+          non-emergency transportation with clear communication from intake to drop-off.
+        </p>
+        <div class="button-row">
+          <a class="button primary" href="#booking">Request a Ride</a>
+          <a class="button ghost" href="tel:+18448847286">Call 844-884-7286</a>
         </div>
       </div>
-      <aside class="hero-panel">
-        <p class="panel-label">Live workflow included</p>
-        <ul>
-          <li>Booking API endpoint</li>
-          <li>Admin authentication</li>
-          <li>Status update system</li>
-          <li>Email outbox automation</li>
-        </ul>
-      </aside>
+
+      <div class="care-scene" aria-label="Transportation route visual">
+        <div class="care-scene-top">
+          <span>Ride request</span>
+          <strong>Today, 9:30 AM</strong>
+        </div>
+        <div class="route-visual">
+          <div class="route-node active">
+            <span></span>
+            <p>Home pickup</p>
+          </div>
+          <div class="route-node">
+            <span></span>
+            <p>Appointment</p>
+          </div>
+          <div class="route-node">
+            <span></span>
+            <p>Return trip</p>
+          </div>
+        </div>
+        <div class="driver-card">
+          <div class="avatar-mark">T</div>
+          <div>
+            <strong>Dispatch review</strong>
+            <span>Mobility notes, companion info, and timing are ready.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-band" aria-label="Service highlights">
+      <div>
+        <strong>Recurring care ready</strong>
+        <span>Dialysis, therapy, adult day care, and repeated appointments.</span>
+      </div>
+      <div>
+        <strong>Mobility-aware intake</strong>
+        <span>Wheelchair, oxygen, companion, stairs, and special handling notes.</span>
+      </div>
+      <div>
+        <strong>Family-friendly communication</strong>
+        <span>Clear call, email, and text touchpoints for ride coordination.</span>
+      </div>
     </section>
 
     <section class="section" id="services">
-      <p class="eyebrow">Services</p>
-      <h2>Transportation categories prepared for production scheduling.</h2>
-      <div class="service-grid">
+      <div class="section-intro wide">
+        <p class="overline">Services</p>
+        <h2>A service structure that makes TISATO feel organized, reliable, and easy to contact.</h2>
+      </div>
+      <div class="service-showcase">
         <article>
-          <h3>Ambulatory Trips</h3>
-          <p>Point-to-point transportation for passengers who can walk with minimal assistance.</p>
+          <span class="service-icon">01</span>
+          <h3>Medical Appointments</h3>
+          <p>Routine checkups, specialist visits, outpatient care, and follow-up appointments.</p>
         </article>
         <article>
-          <h3>Wheelchair Transportation</h3>
-          <p>Request capture includes mobility notes, stairs, companion needs, and equipment flags.</p>
+          <span class="service-icon">02</span>
+          <h3>Dialysis & Recurring Care</h3>
+          <p>Repeat scheduling support for passengers who need reliable weekly transportation.</p>
         </article>
         <article>
-          <h3>Medical Courier</h3>
-          <p>The code supports a courier service type so the workflow can expand beyond passengers.</p>
+          <span class="service-icon">03</span>
+          <h3>Mobility-Assisted Trips</h3>
+          <p>Wheelchair needs, stairs, companion support, oxygen notes, and special handling details.</p>
+        </article>
+        <article>
+          <span class="service-icon">04</span>
+          <h3>Hospital Discharge</h3>
+          <p>Care transition messaging for facility pickup and safe return-home coordination.</p>
         </article>
       </div>
     </section>
 
-    <section class="booking-shell" id="booking">
-      <div>
-        <p class="eyebrow">Booking System</p>
+    <section class="process-section" id="process">
+      <div class="section-intro">
+        <p class="overline">Ride workflow</p>
+        <h2>Simple enough for patients, structured enough for dispatch.</h2>
+      </div>
+      <div class="process-rail">
+        <article>
+          <span>1</span>
+          <h3>Request</h3>
+          <p>Passenger or coordinator submits the trip details through the booking form.</p>
+        </article>
+        <article>
+          <span>2</span>
+          <h3>Review</h3>
+          <p>Dispatch reviews timing, service type, mobility needs, and contact details.</p>
+        </article>
+        <article>
+          <span>3</span>
+          <h3>Confirm</h3>
+          <p>Passenger receives confirmation once the trip is accepted and scheduled.</p>
+        </article>
+        <article>
+          <span>4</span>
+          <h3>Transport</h3>
+          <p>The trip status moves through confirmed, in progress, completed, or cancelled.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="booking-preview-section live-booking-section" id="booking">
+      <div class="booking-preview-copy">
+        <p class="overline">Booking request</p>
         <h2>Submit a real server-side booking request.</h2>
-        <p>The form below posts to <code>/api/bookings</code>. Successful submissions are saved in <code>data/bookings.json</code> and visible in the admin portal.</p>
+        <p>
+          This form posts to <code>/api/bookings</code>. Successful submissions are stored by the
+          Node app and appear in the protected admin queue.
+        </p>
+        <div class="booking-preview-card">
+          <h3>Request summary</h3>
+          <dl>
+            <div><dt>Passenger</dt><dd>Ride details collected securely</dd></div>
+            <div><dt>Dispatch</dt><dd>Admin review and status updates</dd></div>
+            <div><dt>Email</dt><dd>Passenger and dispatch messages queued</dd></div>
+          </dl>
+        </div>
       </div>
 
-      <form class="booking-form" id="bookingForm" novalidate>
+      <form class="booking-form live-booking-form" id="bookingForm" novalidate>
         <div class="form-grid two">
           <label>
             First name
@@ -135,7 +227,7 @@
 
         <label>
           Notes for dispatch
-          <textarea name="notes" rows="5" placeholder="Pickup instructions, medical appointment notes, special handling, or timing details."></textarea>
+          <textarea name="notes" rows="5" placeholder="Pickup instructions, appointment notes, special handling, or timing details."></textarea>
         </label>
 
         <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO may contact me about this request.</label>
@@ -148,9 +240,9 @@
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="reference-footer">
     <p>TISATO Transportation Services INC</p>
-    <p><a href="tel:+18448847286">844-884-7286</a> <span>|</span> <a href="mailto:info@tisatotransportationservices.com">info@tisatotransportationservices.com</a></p>
+    <a href="/admin">Admin Portal</a>
   </footer>
 
   <script src="/assets/js/booking.js" type="module"></script>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Portal Visual Reference | TISATO</title>
+  <meta name="description" content="Admin portal visual reference for TISATO dispatch operations.">
+  <link rel="stylesheet" href="assets/css/visual-reference.css">
+</head>
+<body class="admin-reference-body">
+  <main class="admin-reference-shell">
+    <aside class="admin-side-nav">
+      <img src="assets/img/tisato-logo-stacked.png" alt="TISATO Transportation Services">
+      <nav>
+        <a class="active" href="#queue">Booking Queue</a>
+        <a href="#details">Trip Details</a>
+        <a href="booking-flow-reference.html">Booking Flow</a>
+        <a href="email-reference.html">Email Reference</a>
+        <a href="index.html">Reference Hub</a>
+      </nav>
+    </aside>
+
+    <section class="admin-main-panel">
+      <header class="admin-topbar">
+        <div>
+          <p class="overline">Dispatch operations</p>
+          <h1>Admin portal reference.</h1>
+        </div>
+        <div class="admin-operator">
+          <span>Logged in as</span>
+          <strong>Dispatch Admin</strong>
+        </div>
+      </header>
+
+      <section class="metric-row" id="queue">
+        <article>
+          <span>Pending</span>
+          <strong>8</strong>
+          <small>Needs review</small>
+        </article>
+        <article>
+          <span>Confirmed</span>
+          <strong>14</strong>
+          <small>Upcoming trips</small>
+        </article>
+        <article>
+          <span>In Progress</span>
+          <strong>3</strong>
+          <small>Active routes</small>
+        </article>
+        <article>
+          <span>Completed</span>
+          <strong>37</strong>
+          <small>This week</small>
+        </article>
+      </section>
+
+      <section class="admin-workspace">
+        <div class="queue-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="overline">Today</p>
+              <h2>Booking queue</h2>
+            </div>
+            <button class="button ghost small" type="button">Export CSV</button>
+          </div>
+
+          <div class="queue-table" role="table" aria-label="Booking queue reference">
+            <div class="queue-row queue-head" role="row">
+              <span>Passenger</span>
+              <span>Pickup</span>
+              <span>Service</span>
+              <span>Status</span>
+            </div>
+            <button class="queue-row active" type="button" data-booking-preview="maria">
+              <span><strong>Maria Johnson</strong><small>TISATO-MAY-2048</small></span>
+              <span>8:45 AM</span>
+              <span>Wheelchair</span>
+              <span class="status pending">Pending</span>
+            </button>
+            <button class="queue-row" type="button" data-booking-preview="alan">
+              <span><strong>Alan Brooks</strong><small>TISATO-MAY-2051</small></span>
+              <span>10:15 AM</span>
+              <span>Ambulatory</span>
+              <span class="status confirmed">Confirmed</span>
+            </button>
+            <button class="queue-row" type="button" data-booking-preview="patrice">
+              <span><strong>Patrice Miles</strong><small>TISATO-MAY-2056</small></span>
+              <span>1:30 PM</span>
+              <span>Round trip</span>
+              <span class="status progress">In progress</span>
+            </button>
+          </div>
+        </div>
+
+        <aside class="trip-detail-panel" id="details">
+          <p class="overline">Selected request</p>
+          <h2 data-preview-name>Maria Johnson</h2>
+          <div class="status-control">
+            <label>Status</label>
+            <select data-status-select>
+              <option>Pending</option>
+              <option>Needs information</option>
+              <option>Confirmed</option>
+              <option>In progress</option>
+              <option>Completed</option>
+              <option>Cancelled</option>
+            </select>
+          </div>
+
+          <dl class="detail-list">
+            <div><dt>Phone</dt><dd data-preview-phone>844-884-7286</dd></div>
+            <div><dt>Pickup</dt><dd data-preview-pickup>1824 Pine Ridge Drive</dd></div>
+            <div><dt>Destination</dt><dd data-preview-dropoff>Central Dialysis Care</dd></div>
+            <div><dt>Mobility</dt><dd data-preview-mobility>Wheelchair, companion</dd></div>
+            <div><dt>Notes</dt><dd data-preview-notes>Passenger needs door-to-door assistance and return trip confirmation.</dd></div>
+          </dl>
+
+          <div class="activity-card">
+            <h3>Activity log</h3>
+            <ol>
+              <li>Request received from website.</li>
+              <li>Dispatch notification queued.</li>
+              <li>Passenger confirmation queued.</li>
+            </ol>
+          </div>
+        </aside>
+      </section>
+    </section>
+  </main>
+
+  <script src="assets/js/visual-reference.js" type="module"></script>
+</body>
+</html>

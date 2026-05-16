@@ -39,7 +39,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     setMessage("Request received. Redirecting...", "success");
-    window.location.href = `/thank-you.html?bookingId=${encodeURIComponent(result.bookingId)}`;
+    window.location.href = `/thank-you?bookingId=${encodeURIComponent(result.bookingId)}`;
   } catch (error) {
     console.error(error);
     setMessage("The request could not be submitted. Please call dispatch directly.", "error");

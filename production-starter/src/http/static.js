@@ -21,30 +21,48 @@ function getSafePath(pathname) {
   return filePath;
 }
 
+async function findStaticFile(pathname) {
+  const filePath = getSafePath(pathname);
+  if (!filePath) return null;
+
+  try {
+    const stat = await fs.stat(filePath);
+    if (stat.isFile()) return filePath;
+  } catch {
+    // Try clean URL fallback below.
+  }
+
+  if (extname(pathname)) return null;
+  const htmlPath = getSafePath(`${pathname}.html`);
+  if (!htmlPath) return null;
+
+  try {
+    const stat = await fs.stat(htmlPath);
+    if (stat.isFile()) return htmlPath;
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 export async function serveStatic(request, response) {
   if (request.method !== "GET" && request.method !== "HEAD") return false;
 
   const url = new URL(request.url, config.publicOrigin);
-  const filePath = getSafePath(url.pathname);
+  const filePath = await findStaticFile(url.pathname);
   if (!filePath) return false;
 
-  try {
-    const stat = await fs.stat(filePath);
-    if (!stat.isFile()) return false;
+  response.writeHead(200, {
+    "Content-Type": MIME_TYPES[extname(filePath)] || "application/octet-stream",
+    "Cache-Control": "public, max-age=300",
+  });
 
-    response.writeHead(200, {
-      "Content-Type": MIME_TYPES[extname(filePath)] || "application/octet-stream",
-      "Cache-Control": "public, max-age=300",
-    });
-
-    if (request.method === "HEAD") {
-      response.end();
-      return true;
-    }
-
-    createReadStream(filePath).pipe(response);
+  if (request.method === "HEAD") {
+    response.end();
     return true;
-  } catch {
-    return false;
   }
+
+  createReadStream(filePath).pipe(response);
+  return true;
 }

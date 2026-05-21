@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
   <header class="site-header">
     <a class="brand" href="/" aria-label="TISATO Transportation Services home">
       <img src="/assets/tisato-logo-header.png" alt="TISATO Transportation Services INC">
@@ -25,54 +28,101 @@
   <main>
     <section class="hero-section" id="home">
       <div class="hero-copy">
-        <h1>A Ride Can Change Everything. Transportation Should Not Stand In The Way Of Your Health.</h1>
-        <p>At TISATO Transportation Services, we are more than a ride service.</p>
+        <p class="overline">Central Florida medical transportation</p>
+        <h1>A ride can change everything. Transportation should never stand in the way of care.</h1>
+        <p class="hero-lede">
+          TISATO Transportation Services INC helps passengers, families, clinics, and care coordinators
+          request dependable non-emergency transportation with calm communication from intake to drop-off.
+        </p>
         <div class="hero-actions">
-          <a class="pill-button" href="#booking">Schedule My Ride</a>
-          <a class="text-link" href="tel:+18448847286">Call (844) 884-7286</a>
+          <a class="button primary" href="#booking">Schedule My Ride</a>
+          <a class="button ghost" href="tel:+18448847286">Call (844) 884-7286</a>
         </div>
       </div>
-      <aside class="hero-cloud" aria-label="TISATO care promise">
-        <div class="cloud-card">
-          <img src="/assets/tisato-logo-stacked.png" alt="">
-          <strong>Care in Motion</strong>
-          <span>When you need us, TISATO will help you move with care.</span>
+
+      <aside class="care-scene" aria-label="TISATO ride coordination preview">
+        <div class="care-scene-top">
+          <span>Ride request</span>
+          <strong>Today, 9:30 AM</strong>
+        </div>
+        <div class="route-visual" aria-hidden="true">
+          <div class="route-line"></div>
+          <div class="route-node active">
+            <span></span>
+            <p>Home pickup</p>
+          </div>
+          <div class="route-node">
+            <span></span>
+            <p>Care center</p>
+          </div>
+          <div class="route-node">
+            <span></span>
+            <p>Return trip</p>
+          </div>
+        </div>
+        <div class="driver-card">
+          <div class="avatar-mark">T</div>
+          <div>
+            <strong>Dispatch review ready</strong>
+            <span>Mobility notes, timing, and contact details are organized for follow-up.</span>
+          </div>
         </div>
       </aside>
     </section>
 
     <section class="trust-cards" aria-label="TISATO trust badges">
       <article>
-        <span class="badge-icon wheelchair"></span>
+        <span class="badge-icon badge-ada" aria-hidden="true"></span>
         <strong>ADA-Compliant Vehicles</strong>
+        <p>Mobility-aware transportation for riders who need extra support.</p>
       </article>
       <article>
-        <span class="badge-icon shield"></span>
-        <strong>Licensed & Insured</strong>
+        <span class="badge-icon badge-license" aria-hidden="true"></span>
+        <strong>Licensed &amp; Insured</strong>
+        <p>Professional NEMT coordination for Central Florida care trips.</p>
       </article>
       <article>
-        <span class="badge-icon medical"></span>
+        <span class="badge-icon badge-medical" aria-hidden="true"></span>
         <strong>HIPAA-Aware Transport</strong>
+        <p>Careful communication around passenger and appointment details.</p>
       </article>
       <article>
-        <span class="badge-icon stars"></span>
-        <strong>Central Florida Care</strong>
+        <span class="badge-icon badge-local" aria-hidden="true"></span>
+        <strong>Central Florida Focus</strong>
+        <p>Serving Orlando-area appointments, facilities, and recurring care.</p>
       </article>
       <article>
-        <span class="badge-icon check"></span>
+        <span class="badge-icon badge-driver" aria-hidden="true"></span>
         <strong>Background-Checked Drivers</strong>
+        <p>Reliable dispatch review before every scheduled ride.</p>
       </article>
     </section>
 
     <section class="schedule-strip" id="booking">
-      <a class="pill-button large" href="#bookingForm">Schedule My Ride</a>
+      <div>
+        <p class="overline">Schedule My Ride</p>
+        <h2>Tell dispatch where care needs to start.</h2>
+      </div>
+      <a class="button primary" href="#bookingForm">Start Request</a>
     </section>
 
     <section class="booking-panel" aria-labelledby="booking-title">
-      <div class="section-heading compact">
-        <h2 id="booking-title">Request Transportation</h2>
-        <p>Send your ride request to TISATO dispatch. We will review the trip details and follow up during business hours.</p>
+      <div class="booking-preview">
+        <div>
+          <p class="overline">Booking request</p>
+          <h2 id="booking-title">Request transportation.</h2>
+          <p>
+            This form posts to the live TISATO booking API and feeds the protected admin queue.
+            Add the trip details, mobility notes, and contact information dispatch needs.
+          </p>
+        </div>
+        <dl class="request-summary">
+          <div><dt>Service area</dt><dd>Central Florida</dd></div>
+          <div><dt>Dispatch phone</dt><dd>(844) 884-7286</dd></div>
+          <div><dt>Common trips</dt><dd>Dialysis, therapy, appointments, discharge</dd></div>
+        </dl>
       </div>
+
       <form class="booking-form" id="bookingForm" novalidate>
         <div class="form-grid two">
           <label>
@@ -147,7 +197,7 @@
         <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO may contact me about this request.</label>
 
         <div class="form-footer">
-          <button class="pill-button submit" type="submit">Submit Booking Request</button>
+          <button class="button primary" type="submit">Submit Booking Request</button>
           <p id="bookingMessage" class="form-message" role="status"></p>
         </div>
       </form>
@@ -155,88 +205,97 @@
 
     <section class="operate-section" id="operate">
       <div class="section-heading">
-        <h2>How We Operate</h2>
+        <p class="overline">How We Operate</p>
+        <h2>Simple enough for riders. Structured enough for dispatch.</h2>
       </div>
       <div class="operate-grid">
         <article>
-          <span class="round-icon calendar"></span>
+          <span class="step-number">01</span>
           <h3>Scheduling your ride is simple.</h3>
-          <p>Book online or call our dispatch team, and we will confirm your pickup details.</p>
+          <p>Book online or call dispatch, and we will review pickup, destination, timing, and support needs.</p>
         </article>
         <article>
-          <span class="round-icon vehicle"></span>
+          <span class="step-number">02</span>
           <h3>On-time pickup, every time.</h3>
-          <p>We assist from your door to the vehicle for a smooth, stress-free pickup.</p>
+          <p>TISATO coordinates the ride details so the trip can move from request to confirmation clearly.</p>
         </article>
         <article>
-          <span class="round-icon rider"></span>
+          <span class="step-number">03</span>
           <h3>Arrive safely and comfortably.</h3>
-          <p>Relax while we get you to your appointment with reliable care.</p>
+          <p>Riders receive thoughtful transportation to medical appointments, recurring care, and return trips.</p>
         </article>
       </div>
     </section>
 
     <section class="services-section" id="services">
       <div class="section-heading">
-        <h2>Our Services</h2>
-        <p>Transportation to and from</p>
+        <p class="overline">Our Services</p>
+        <h2>Transportation to and from the care that keeps life moving.</h2>
       </div>
       <div class="service-grid">
-        <article><span></span>Medical Appointments</article>
-        <article><span></span>Dialysis Centers</article>
-        <article><span></span>Acute Care Facilities</article>
-        <article><span></span>Pharmacies</article>
-        <article><span></span>Adult Day Care Centers</article>
-        <article><span></span>Chemotherapy</article>
-        <article><span></span>Hospital Admissions and Discharges</article>
-        <article><span></span>Physical/Occupational/Speech Therapy</article>
-        <article><span></span>And Many More Services</article>
+        <article><span>01</span>Medical Appointments</article>
+        <article><span>02</span>Dialysis Centers</article>
+        <article><span>03</span>Acute Care Facilities</article>
+        <article><span>04</span>Pharmacies</article>
+        <article><span>05</span>Adult Day Care Centers</article>
+        <article><span>06</span>Chemotherapy</article>
+        <article><span>07</span>Hospital Admissions and Discharges</article>
+        <article><span>08</span>Physical, Occupational, and Speech Therapy</article>
+        <article><span>09</span>Additional Healthcare Trips</article>
       </div>
     </section>
 
     <section class="testimonials-section" id="testimonials">
       <div class="section-heading">
-        <h2>Testimonials</h2>
+        <p class="overline">Testimonials</p>
+        <h2>Care coordinators notice calm, clear transportation.</h2>
       </div>
       <div class="testimonial-grid">
         <article>
-          <div class="stars">★★★★★</div>
-          <p>“TISATO has become our go-to service for getting patients to appointments. They are reliable, patient, and respectful with every rider.”</p>
-          <footer><span class="avatar">J</span><strong>James Smith</strong></footer>
+          <div class="rating" aria-label="5 out of 5 rating"><span></span><span></span><span></span><span></span><span></span></div>
+          <p>"TISATO has become our go-to service for getting patients to appointments. They are reliable, patient, and respectful with every rider."</p>
+          <footer><span class="avatar">JS</span><strong>James Smith</strong></footer>
         </article>
         <article>
-          <div class="stars">★★★★★</div>
-          <p>“Coordinating daily appointments can get chaotic, but TISATO makes communication clear and pickups consistent for our office.”</p>
-          <footer><span class="avatar">R</span><strong>Rachel Lee</strong></footer>
+          <div class="rating" aria-label="5 out of 5 rating"><span></span><span></span><span></span><span></span><span></span></div>
+          <p>"Coordinating daily appointments can get chaotic, but TISATO makes communication clear and pickups consistent for our office."</p>
+          <footer><span class="avatar">RL</span><strong>Rachel Lee</strong></footer>
         </article>
         <article>
-          <div class="stars">★★★★★</div>
-          <p>“They show up early, treat every passenger with dignity, and keep families updated. It is a real relief knowing riders are in good hands.”</p>
-          <footer><span class="avatar">M</span><strong>Michael Chen</strong></footer>
+          <div class="rating" aria-label="5 out of 5 rating"><span></span><span></span><span></span><span></span><span></span></div>
+          <p>"They show up prepared, treat every passenger with dignity, and keep families updated. It is a relief knowing riders are in good hands."</p>
+          <footer><span class="avatar">MC</span><strong>Michael Chen</strong></footer>
         </article>
       </div>
     </section>
 
     <section class="about-section" id="about">
       <div class="section-heading">
-        <h2>About Us</h2>
+        <p class="overline">About Us</p>
+        <h2>Transportation built around reliability, dignity, and medical routines.</h2>
       </div>
       <div class="about-copy">
         <p>
-          TISATO Transportation Services INC is a Central Florida non-emergency medical transportation company supporting passengers, families, healthcare facilities, and care coordinators.
+          TISATO Transportation Services INC is a Central Florida non-emergency medical transportation
+          company supporting passengers, families, healthcare facilities, and care coordinators.
         </p>
         <p>
-          We specialize in reliable recurring transportation for dialysis patients, seniors, wheelchair users, and individuals with limited mobility or chronic health conditions. With door-through-door assistance and thoughtful communication, every ride is treated as an opportunity to protect, support, and dignify the people we serve.
+          We specialize in reliable recurring transportation for dialysis patients, seniors, wheelchair
+          users, and individuals with limited mobility or chronic health conditions. With door-through-door
+          assistance and thoughtful communication, every ride is treated as an opportunity to protect,
+          support, and dignify the people we serve.
         </p>
         <p>
-          Our values are safety, compassion, reliability, integrity, and excellence. We believe transportation should never stand between a person and their care.
+          Our values are safety, compassion, reliability, integrity, and excellence. We believe transportation
+          should never stand between a person and their care.
         </p>
       </div>
     </section>
 
     <section class="faq-section" id="faqs">
       <div class="section-heading">
-        <h2>Frequently Asked Questions</h2>
+        <p class="overline">FAQ</p>
+        <h2>Frequently asked questions.</h2>
       </div>
       <div class="faq-list">
         <details>

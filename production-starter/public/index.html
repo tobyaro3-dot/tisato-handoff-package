@@ -35,7 +35,7 @@
           request dependable non-emergency transportation with calm communication from intake to drop-off.
         </p>
         <div class="hero-actions">
-          <a class="button primary" href="#booking">Schedule My Ride</a>
+          <a class="button primary" href="/booking">Schedule My Ride</a>
           <a class="button ghost" href="tel:+18448847286">Call (844) 884-7286</a>
         </div>
       </div>
@@ -46,10 +46,6 @@
             <source src="/assets/video/tisato-hero-animation.mp4" type="video/mp4">
             Your browser does not support the TISATO hero animation.
           </video>
-        </div>
-        <div class="media-note">
-          <span>Care in motion</span>
-          <strong>Schedule, confirm, and arrive with peace of mind.</strong>
         </div>
       </aside>
     </section>
@@ -87,104 +83,7 @@
         <p class="overline">Schedule My Ride</p>
         <h2>Tell dispatch where care needs to start.</h2>
       </div>
-      <a class="button primary" href="#bookingForm">Start Request</a>
-    </section>
-
-    <section class="booking-panel" aria-labelledby="booking-title">
-      <div class="booking-preview">
-        <div>
-          <p class="overline">Booking request</p>
-          <h2 id="booking-title">Request transportation.</h2>
-          <p>
-            This form posts to the live TISATO booking API and feeds the protected admin queue.
-            Add the trip details, mobility notes, and contact information dispatch needs.
-          </p>
-        </div>
-        <dl class="request-summary">
-          <div><dt>Service area</dt><dd>Central Florida</dd></div>
-          <div><dt>Dispatch phone</dt><dd>(844) 884-7286</dd></div>
-          <div><dt>Common trips</dt><dd>Dialysis, therapy, appointments, discharge</dd></div>
-        </dl>
-      </div>
-
-      <form class="booking-form" id="bookingForm" novalidate>
-        <div class="form-grid two">
-          <label>
-            First name
-            <input name="firstName" autocomplete="given-name" required>
-          </label>
-          <label>
-            Last name
-            <input name="lastName" autocomplete="family-name" required>
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" autocomplete="email">
-          </label>
-          <label>
-            Phone
-            <input name="phone" autocomplete="tel" required>
-          </label>
-        </div>
-
-        <div class="form-grid two">
-          <label>
-            Pickup date
-            <input name="pickupDate" type="date" required>
-          </label>
-          <label>
-            Pickup time
-            <input name="pickupTime" type="time" required>
-          </label>
-        </div>
-
-        <label>
-          Pickup address
-          <input name="pickupAddress" autocomplete="street-address" required>
-        </label>
-        <label>
-          Drop-off address
-          <input name="dropoffAddress" required>
-        </label>
-
-        <div class="form-grid two">
-          <label>
-            Service type
-            <select name="serviceType">
-              <option value="ambulatory">Ambulatory</option>
-              <option value="wheelchair">Wheelchair</option>
-              <option value="stretcher">Stretcher</option>
-              <option value="medical-courier">Medical courier</option>
-              <option value="other">Other</option>
-            </select>
-          </label>
-          <label>
-            Appointment time
-            <input name="appointmentTime" placeholder="Optional">
-          </label>
-        </div>
-
-        <fieldset class="check-grid">
-          <legend>Trip details</legend>
-          <label><input type="checkbox" name="returnTrip"> Return trip requested</label>
-          <label><input type="checkbox" name="wheelchair"> Wheelchair</label>
-          <label><input type="checkbox" name="oxygen"> Oxygen</label>
-          <label><input type="checkbox" name="companion"> Companion riding along</label>
-          <label><input type="checkbox" name="stairs"> Stairs involved</label>
-        </fieldset>
-
-        <label>
-          Notes for dispatch
-          <textarea name="notes" rows="5" placeholder="Pickup instructions, appointment notes, special handling, or timing details."></textarea>
-        </label>
-
-        <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO may contact me about this request.</label>
-
-        <div class="form-footer">
-          <button class="button primary" type="submit">Submit Booking Request</button>
-          <p id="bookingMessage" class="form-message" role="status"></p>
-        </div>
-      </form>
+      <a class="button primary" href="/booking">Start Request</a>
     </section>
 
     <section class="operate-section" id="operate">
@@ -211,21 +110,64 @@
       </div>
     </section>
 
-    <section class="services-section" id="services">
+    <section class="services-section premium-services" id="services">
+      <div class="services-ambient services-ambient-one"></div>
+      <div class="services-ambient services-ambient-two"></div>
       <div class="section-heading">
         <p class="overline">Our Services</p>
         <h2>Transportation to and from the care that keeps life moving.</h2>
+        <p>From one-time appointments to recurring medical routines, TISATO helps riders get there with comfort, clarity, and dependable support.</p>
       </div>
       <div class="service-grid">
-        <article><span>01</span>Medical Appointments</article>
-        <article><span>02</span>Dialysis Centers</article>
-        <article><span>03</span>Acute Care Facilities</article>
-        <article><span>04</span>Pharmacies</article>
-        <article><span>05</span>Adult Day Care Centers</article>
-        <article><span>06</span>Chemotherapy</article>
-        <article><span>07</span>Hospital Admissions and Discharges</article>
-        <article><span>08</span>Physical, Occupational, and Speech Therapy</article>
-        <article><span>09</span>Additional Healthcare Trips</article>
+        <article class="service-card wide-service">
+          <span class="service-number">01</span>
+          <div class="service-icon icon-recurring" aria-hidden="true"></div>
+          <h3>Recurring Ride Scheduling</h3>
+          <p>Dialysis, therapy, adult day care, and ongoing appointments with a schedule riders can count on.</p>
+        </article>
+        <article class="service-card">
+          <span class="service-number">02</span>
+          <div class="service-icon icon-medical" aria-hidden="true"></div>
+          <h3>Medical Appointments</h3>
+          <p>Routine checkups, specialist visits, outpatient clinics, and follow-up care.</p>
+        </article>
+        <article class="service-card">
+          <span class="service-number">03</span>
+          <div class="service-icon icon-dialysis" aria-hidden="true"></div>
+          <h3>Dialysis Centers</h3>
+          <p>Reliable recurring transportation for treatment schedules that cannot be missed.</p>
+        </article>
+        <article class="service-card">
+          <span class="service-number">04</span>
+          <div class="service-icon icon-acute" aria-hidden="true"></div>
+          <h3>Acute Care Facilities</h3>
+          <p>Dependable pickup and drop-off coordination for care centers and facility visits.</p>
+        </article>
+        <article class="service-card">
+          <span class="service-number">05</span>
+          <div class="service-icon icon-pharmacy" aria-hidden="true"></div>
+          <h3>Pharmacies</h3>
+          <p>Healthcare errands and medication-related trips handled with practical support.</p>
+        </article>
+        <article class="service-card">
+          <span class="service-number">06</span>
+          <div class="service-icon icon-therapy" aria-hidden="true"></div>
+          <h3>Therapy &amp; Rehab</h3>
+          <p>Physical, occupational, speech therapy, chemotherapy, and rehab transportation.</p>
+        </article>
+        <article class="service-card wide-service">
+          <span class="service-number">07</span>
+          <div class="service-icon icon-discharge" aria-hidden="true"></div>
+          <h3>Hospital Admissions and Discharges</h3>
+          <p>Door-through-door trip planning for transitions home, follow-up appointments, and additional healthcare-related transportation needs.</p>
+        </article>
+      </div>
+      <div class="services-cta">
+        <div>
+          <p class="overline">Need a ride plan?</p>
+          <h3>Book once, or build a recurring schedule around your care.</h3>
+        </div>
+        <a class="button primary" href="/booking">Schedule My Ride</a>
       </div>
     </section>
 
@@ -311,7 +253,5 @@
       <a href="mailto:info@tisatotransportationservices.com">info@tisatotransportationservices.com</a>
     </div>
   </footer>
-
-  <script src="/assets/js/booking.js" type="module"></script>
 </body>
 </html>

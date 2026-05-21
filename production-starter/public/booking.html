@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schedule My Ride | TISATO Transportation Services</title>
+  <meta name="description" content="Request non-emergency medical transportation from TISATO Transportation Services INC.">
+  <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="TISATO Transportation Services home">
+      <img src="/assets/tisato-logo-header.png" alt="TISATO Transportation Services INC">
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/">Home</a>
+      <a href="/#services">Services</a>
+      <a href="/#about">About</a>
+      <a href="/#testimonials">Testimonial</a>
+      <a href="/#faqs">Faqs</a>
+      <a href="/#contact">Contact Us</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="booking-panel standalone-booking" aria-labelledby="booking-title">
+      <div class="booking-preview">
+        <div>
+          <p class="overline">Booking request</p>
+          <h1 id="booking-title">Request transportation.</h1>
+          <p>
+            Send your ride request to TISATO dispatch. Add the trip details, mobility notes,
+            and contact information we need to review your transportation request.
+          </p>
+        </div>
+        <dl class="request-summary">
+          <div><dt>Service area</dt><dd>Central Florida</dd></div>
+          <div><dt>Dispatch phone</dt><dd>(844) 884-7286</dd></div>
+          <div><dt>Common trips</dt><dd>Dialysis, therapy, appointments, discharge</dd></div>
+        </dl>
+      </div>
+
+      <form class="booking-form" id="bookingForm" novalidate>
+        <div class="form-grid two">
+          <label>
+            First name
+            <input name="firstName" autocomplete="given-name" required>
+          </label>
+          <label>
+            Last name
+            <input name="lastName" autocomplete="family-name" required>
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email">
+          </label>
+          <label>
+            Phone
+            <input name="phone" autocomplete="tel" required>
+          </label>
+        </div>
+
+        <div class="form-grid two">
+          <label>
+            Pickup date
+            <input name="pickupDate" type="date" required>
+          </label>
+          <label>
+            Pickup time
+            <input name="pickupTime" type="time" required>
+          </label>
+        </div>
+
+        <label>
+          Pickup address
+          <input name="pickupAddress" autocomplete="street-address" required>
+        </label>
+        <label>
+          Drop-off address
+          <input name="dropoffAddress" required>
+        </label>
+
+        <div class="form-grid two">
+          <label>
+            Service type
+            <select name="serviceType">
+              <option value="ambulatory">Ambulatory</option>
+              <option value="wheelchair">Wheelchair</option>
+              <option value="stretcher">Stretcher</option>
+              <option value="medical-courier">Medical courier</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            Appointment time
+            <input name="appointmentTime" placeholder="Optional">
+          </label>
+        </div>
+
+        <fieldset class="check-grid">
+          <legend>Trip details</legend>
+          <label><input type="checkbox" name="returnTrip"> Return trip requested</label>
+          <label><input type="checkbox" name="wheelchair"> Wheelchair</label>
+          <label><input type="checkbox" name="oxygen"> Oxygen</label>
+          <label><input type="checkbox" name="companion"> Companion riding along</label>
+          <label><input type="checkbox" name="stairs"> Stairs involved</label>
+        </fieldset>
+
+        <label>
+          Notes for dispatch
+          <textarea name="notes" rows="5" placeholder="Pickup instructions, appointment notes, special handling, or timing details."></textarea>
+        </label>
+
+        <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO may contact me about this request.</label>
+
+        <div class="form-footer">
+          <button class="button primary" type="submit">Submit Booking Request</button>
+          <p id="bookingMessage" class="form-message" role="status"></p>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <img src="/assets/tisato-logo-stacked.png" alt="TISATO Transportation Services INC">
+    <div>
+      <strong>TISATO Transportation Services INC</strong>
+      <span>4071 LB McLeod Rd, Ste D #220, Orlando, FL 32811</span>
+      <a href="tel:+18448847286">(844) 884-7286</a>
+      <a href="mailto:info@tisatotransportationservices.com">info@tisatotransportationservices.com</a>
+    </div>
+  </footer>
+
+  <script src="/assets/js/booking.js" type="module"></script>
+</body>
+</html>

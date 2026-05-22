@@ -8,10 +8,14 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "build": "npm run check",
+    "db:init": "node scripts/init-db.js",
     "hash-password": "node scripts/hash-password.js",
     "check": "node scripts/check.js"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
   }
 }

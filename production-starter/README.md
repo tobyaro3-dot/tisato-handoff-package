@@ -38,6 +38,7 @@ Set these environment variables before production traffic:
 
 ```txt
 PUBLIC_ORIGIN=https://your-domain.example
+DATABASE_URL=postgresql://...
 ADMIN_EMAIL=owner@example.com
 ADMIN_PASSWORD_HASH=pbkdf2_sha256$...
 ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
@@ -46,7 +47,13 @@ DISPATCH_EMAIL=info@tisatotransportationservices.com
 DISPATCH_PHONE=+18448847286
 ```
 
-On Vercel, the starter defaults `DATA_DIR` to `/tmp/tisato-data` so file writes work inside serverless functions. That storage is ephemeral and can reset between function instances. For real production booking history, replace the JSON storage layer with a managed database or set `DATA_DIR` only on hosting that provides persistent server storage.
+On Vercel, set `DATABASE_URL` to a Neon Postgres connection string before launch. The booking queue uses Neon when `DATABASE_URL` is present, so admin booking history persists across serverless function restarts. Without `DATABASE_URL`, the starter falls back to the local JSON files in `DATA_DIR`; that fallback is useful for local demos but is not reliable production storage on Vercel.
+
+Initialize the Neon schema once after setting `DATABASE_URL`:
+
+```bash
+npm run db:init
+```
 
 For production, generate a password hash:
 
@@ -79,7 +86,7 @@ ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
   Queues email messages to `data/outbox/` so a production email provider can replace the file-based transport later.
 
 - `src/storage/`
-  JSON persistence layer with atomic writes for bookings, email logs, and audit logs.
+  Booking persistence layer. Uses Neon Postgres when `DATABASE_URL` is configured, with JSON file fallback for local demos. Email logs and audit logs still use local JSON files.
 
 - `src/security/`
   Password hashing, signed sessions, and in-memory rate limiting.
@@ -98,13 +105,13 @@ data/email-log.json
 data/outbox/
 ```
 
-This keeps the starter self-contained. In production, swap the storage modules for Postgres, Supabase, Neon, or another managed database.
+This keeps the starter self-contained for local demos. In production on Vercel, booking records should use Neon through `DATABASE_URL`; email and audit logs can be upgraded later if needed.
 
 Set `DATA_DIR=/secure/server/path` if runtime data should live outside the application folder.
 
 ## Production Upgrade Path
 
-1. Replace JSON storage with a database.
+1. Set `DATABASE_URL` and run `npm run db:init`.
 2. Replace file outbox emails with Resend, SendGrid, Postmark, or another provider.
 3. Set `ADMIN_PASSWORD_HASH` and remove local `ADMIN_PASSWORD`.
 4. Set a long random `ADMIN_SESSION_SECRET`.

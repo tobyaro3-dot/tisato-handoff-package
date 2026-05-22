@@ -11,6 +11,7 @@ export const config = {
   rootDir,
   publicDir: join(rootDir, "public"),
   dataDir: process.env.DATA_DIR || defaultDataDir,
+  databaseUrl: process.env.DATABASE_URL || "",
   businessName: process.env.BUSINESS_NAME || "TISATO Transportation Services INC",
   dispatchEmail: process.env.DISPATCH_EMAIL || "info@tisatotransportationservices.com",
   dispatchPhone: process.env.DISPATCH_PHONE || "+18448847286",

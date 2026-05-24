@@ -272,13 +272,13 @@ main > section {
   border: 1px solid rgba(255, 250, 240, 0);
   border-radius: 999px;
   color: #24133d;
-  font-size: 0.92rem;
-  font-weight: 900;
-  padding: 8px 12px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  padding: 8px 13px;
   text-decoration: none;
-  text-shadow: 0 1px 0 rgba(255, 250, 240, 0.52), 0 1px 10px rgba(18, 8, 34, 0.28);
+  text-shadow: 0 1px 0 rgba(255, 250, 240, 0.6), 0 1px 8px rgba(18, 8, 34, 0.16);
   transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
-  -webkit-text-stroke: 0.22px rgba(20, 8, 38, 0.26);
+  -webkit-text-stroke: 0;
 }
 
 .site-nav a:hover {
@@ -308,6 +308,14 @@ main > section {
 
 .hero-copy {
   align-self: center;
+}
+
+.hero-copy h1 {
+  font-size: clamp(2.25rem, 3.85vw, 4.35rem);
+  letter-spacing: -0.052em;
+  line-height: 1.02;
+  margin-inline: auto;
+  max-width: 11.6ch;
 }
 
 .overline {
@@ -411,7 +419,7 @@ main > section {
   overflow: hidden;
   padding: clamp(12px, 2.4vw, 22px);
   position: relative;
-  transform: translate(76px, -78px);
+  transform: translate(34px, -34px);
 }
 
 .hero-media::before {
@@ -509,10 +517,11 @@ main > section {
 
 .trust-cards {
   background:
-    radial-gradient(circle at 8% 0%, rgba(216, 173, 89, 0.18), transparent 18rem),
-    radial-gradient(circle at 90% 30%, rgba(237, 232, 247, 0.16), transparent 16rem),
-    linear-gradient(135deg, rgba(45, 20, 73, 0.98), rgba(91, 43, 140, 0.94));
-  border: 1px solid rgba(255, 250, 240, 0.12);
+    radial-gradient(circle at 8% 0%, rgba(216, 173, 89, 0.16), transparent 18rem),
+    radial-gradient(circle at 90% 30%, rgba(237, 232, 247, 0.2), transparent 16rem),
+    linear-gradient(135deg, rgba(61, 26, 120, 0.74), rgba(116, 64, 168, 0.58));
+  backdrop-filter: blur(18px) saturate(1.05);
+  border: 1px solid rgba(255, 250, 240, 0.18);
   border-bottom: 0;
   color: var(--paper);
   display: grid;
@@ -524,8 +533,8 @@ main > section {
 }
 
 .trust-cards article {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-  border-left: 1px solid rgba(255, 250, 240, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.052));
+  border-left: 1px solid rgba(255, 250, 240, 0.14);
   display: grid;
   gap: 14px;
   min-height: 245px;
@@ -539,7 +548,7 @@ main > section {
 }
 
 .trust-cards article::after {
-  background: linear-gradient(180deg, transparent, rgba(216, 173, 89, 0.42), transparent);
+  background: linear-gradient(180deg, transparent, rgba(216, 173, 89, 0.32), transparent);
   content: "";
   opacity: 0;
   position: absolute;
@@ -551,8 +560,8 @@ main > section {
 }
 
 .trust-cards article:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.055));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 22px 46px rgba(13, 6, 25, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.078));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 20px 42px rgba(13, 6, 25, 0.12);
   transform: translateY(-5px);
   z-index: 1;
 }
@@ -569,7 +578,7 @@ main > section {
 }
 
 .trust-cards p {
-  color: rgba(255, 250, 240, 0.76);
+  color: rgba(255, 250, 240, 0.84);
   line-height: 1.45;
   margin: 0;
 }
@@ -577,11 +586,11 @@ main > section {
 .badge-icon {
   align-items: center;
   background:
-    radial-gradient(circle at 30% 24%, rgba(216, 173, 89, 0.2), transparent 52%),
-    rgba(255, 250, 240, 0.11);
-  border: 1px solid rgba(255, 250, 240, 0.24);
+    radial-gradient(circle at 30% 24%, rgba(216, 173, 89, 0.18), transparent 52%),
+    rgba(255, 250, 240, 0.16);
+  border: 1px solid rgba(255, 250, 240, 0.3);
   border-radius: 999px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 16px 34px rgba(13, 6, 25, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 14px 28px rgba(13, 6, 25, 0.1);
   color: #f2cc78;
   display: grid;
   height: 64px;
@@ -602,7 +611,7 @@ main > section {
 }
 
 .trust-cards article:hover .badge-icon {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 0 8px rgba(216, 173, 89, 0.06), 0 18px 38px rgba(13, 6, 25, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 0 0 8px rgba(216, 173, 89, 0.055), 0 16px 34px rgba(13, 6, 25, 0.14);
   color: #ffe0a0;
   transform: translateY(-2px);
 }
@@ -610,12 +619,12 @@ main > section {
 .schedule-strip {
   align-items: center;
   background:
-    radial-gradient(circle at 84% 30%, rgba(216, 173, 89, 0.18), transparent 15rem),
-    radial-gradient(circle at 24% 118%, rgba(237, 232, 247, 0.22), transparent 20rem),
-    linear-gradient(120deg, rgba(116, 64, 168, 0.96), rgba(45, 20, 73, 0.98));
-  border: 1px solid rgba(255, 250, 240, 0.12);
-  border-top: 1px solid rgba(255, 250, 240, 0.08);
-  box-shadow: 0 28px 70px rgba(45, 20, 73, 0.18);
+    radial-gradient(circle at 84% 30%, rgba(216, 173, 89, 0.16), transparent 15rem),
+    radial-gradient(circle at 24% 118%, rgba(237, 232, 247, 0.26), transparent 20rem),
+    linear-gradient(120deg, rgba(116, 64, 168, 0.82), rgba(61, 26, 120, 0.86));
+  border: 1px solid rgba(255, 250, 240, 0.18);
+  border-top: 1px solid rgba(255, 250, 240, 0.12);
+  box-shadow: 0 24px 58px rgba(45, 20, 73, 0.14);
   color: var(--paper);
   display: flex;
   gap: 24px;
@@ -629,7 +638,7 @@ main > section {
 
 .schedule-strip::before {
   animation: cta-blob-drift 12s ease-in-out infinite alternate;
-  background: radial-gradient(circle, rgba(255, 250, 240, 0.18), rgba(216, 173, 89, 0.08) 45%, transparent 72%);
+  background: radial-gradient(circle, rgba(255, 250, 240, 0.2), rgba(216, 173, 89, 0.07) 45%, transparent 72%);
   border-radius: 999px;
   content: "";
   height: 260px;
@@ -655,9 +664,9 @@ main > section {
 }
 
 .schedule-strip .button.primary {
-  background: rgba(255, 250, 240, 0.12);
-  border: 1px solid rgba(255, 250, 240, 0.22);
-  box-shadow: 0 18px 40px rgba(13, 6, 25, 0.18);
+  background: rgba(255, 250, 240, 0.16);
+  border: 1px solid rgba(255, 250, 240, 0.28);
+  box-shadow: 0 16px 34px rgba(13, 6, 25, 0.14);
   color: #fffaf0;
   white-space: nowrap;
 }
@@ -892,6 +901,10 @@ dd {
   max-width: var(--max);
 }
 
+.premium-services > .service-grid {
+  max-width: 1120px;
+}
+
 .services-ambient {
   animation: ambient-float 15s ease-in-out infinite alternate;
   border-radius: 999px;
@@ -936,7 +949,10 @@ dd {
 .service-grid {
   grid-template-columns: repeat(6, 1fr);
   gap: 22px;
+  margin-inline: auto;
   margin-top: clamp(34px, 5vw, 58px);
+  max-width: 1120px;
+  width: 100%;
 }
 
 .service-card {
@@ -1466,7 +1482,9 @@ dd {
 }
 
 .site-footer img {
-  max-width: 170px;
+  height: auto;
+  max-width: 230px;
+  width: min(230px, 42vw);
 }
 
 .site-footer div,
@@ -1796,7 +1814,13 @@ dd {
   }
 
   h1 {
-    font-size: clamp(2.3rem, 13vw, 3.6rem);
+    font-size: clamp(2.15rem, 11.5vw, 3.2rem);
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.05rem, 10.4vw, 2.95rem);
+    line-height: 1.06;
+    max-width: 11.5ch;
   }
 
   h2 {
@@ -1829,11 +1853,16 @@ dd {
   }
 
   .trust-cards,
+  .service-grid,
   .form-grid.two,
   .check-grid,
   .metric-row,
   .booking-row {
     grid-template-columns: 1fr;
+  }
+
+  .service-grid > .service-card {
+    grid-column: 1 / -1;
   }
 
   .trust-cards article {

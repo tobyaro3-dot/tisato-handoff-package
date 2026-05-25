@@ -1,4 +1,59 @@
 const faqItems = document.querySelectorAll(".faq-item");
+const siteHeader = document.querySelector(".site-header");
+const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
+const navSections = navLinks
+  .map((link) => {
+    const href = link.getAttribute("href") || "";
+    const id = href === "/" ? "home" : href.startsWith("#") ? href.slice(1) : "";
+    return id ? { id, link, section: document.getElementById(id) } : null;
+  })
+  .filter((item) => item && item.section);
+
+let navTicking = false;
+
+const setActiveNavLink = (activeId) => {
+  navLinks.forEach((link) => {
+    const href = link.getAttribute("href") || "";
+    const linkId = href === "/" ? "home" : href.startsWith("#") ? href.slice(1) : "";
+    const isActive = linkId !== "home" && linkId === activeId;
+
+    link.classList.toggle("is-active", isActive);
+    if (isActive) {
+      link.setAttribute("aria-current", activeId === "home" ? "page" : "true");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+};
+
+const updateNavState = () => {
+  navTicking = false;
+
+  if (siteHeader) {
+    siteHeader.classList.toggle("is-scrolled", window.scrollY > 80);
+  }
+
+  const activeSection = navSections.reduce((current, item) => {
+    const rect = item.section.getBoundingClientRect();
+    if (rect.top <= 150 && rect.bottom > 150) {
+      return item;
+    }
+    return current;
+  }, navSections[0]);
+
+  if (activeSection) {
+    setActiveNavLink(activeSection.id);
+  }
+};
+
+const requestNavUpdate = () => {
+  if (navTicking) return;
+  navTicking = true;
+  requestAnimationFrame(updateNavState);
+};
+
+updateNavState();
+window.addEventListener("scroll", requestNavUpdate, { passive: true });
 
 const setFaqState = (item, expanded) => {
   const trigger = item.querySelector(".faq-trigger");

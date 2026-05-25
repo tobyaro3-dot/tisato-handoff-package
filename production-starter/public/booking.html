@@ -17,7 +17,7 @@
 
   <header class="site-header">
     <a class="brand" href="/" aria-label="TISATO Transportation Services home">
-      <img src="/assets/tisato-logo-header.png" alt="TISATO Transportation Services INC">
+      <img src="/assets/tisato-logo-transparent-cropped.png" alt="TISATO Transportation Services INC">
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
@@ -64,6 +64,7 @@
           <label>
             Phone
             <input name="phone" autocomplete="tel" required>
+            <span class="field-error" data-field-error="phone"></span>
           </label>
         </div>
 
@@ -71,6 +72,7 @@
           <label>
             Pickup date
             <input name="pickupDate" type="date" required>
+            <span class="field-error" data-field-error="pickupDate"></span>
           </label>
           <label>
             Pickup time
@@ -93,14 +95,13 @@
             <select name="serviceType">
               <option value="ambulatory">Ambulatory</option>
               <option value="wheelchair">Wheelchair</option>
-              <option value="stretcher">Stretcher</option>
-              <option value="medical-courier">Medical courier</option>
               <option value="other">Other</option>
             </select>
           </label>
           <label>
             Appointment time
-            <input name="appointmentTime" placeholder="Optional">
+            <input name="appointmentTime" type="time" placeholder="Optional">
+            <span class="field-error" data-field-error="appointmentTime"></span>
           </label>
         </div>
 
@@ -108,9 +109,6 @@
           <legend>Trip details</legend>
           <label><input type="checkbox" name="returnTrip"> Return trip requested</label>
           <label><input type="checkbox" name="wheelchair"> Wheelchair</label>
-          <label><input type="checkbox" name="oxygen"> Oxygen</label>
-          <label><input type="checkbox" name="companion"> Companion riding along</label>
-          <label><input type="checkbox" name="stairs"> Stairs involved</label>
         </fieldset>
 
         <label>
@@ -118,7 +116,8 @@
           <textarea name="notes" rows="5" placeholder="Pickup instructions, appointment notes, special handling, or timing details."></textarea>
         </label>
 
-        <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO may contact me about this request.</label>
+        <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO Transportation Services may contact me about this request.</label>
+        <label class="terms"><input type="checkbox" name="smsUpdates"> I would like to receive SMS confirmation and updates about this ride request.</label>
 
         <div class="form-footer">
           <button class="button primary" type="submit">Submit Booking Request</button>

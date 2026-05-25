@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TISATO Transportation Services | Central Florida NEMT</title>
   <meta name="description" content="TISATO Transportation Services INC provides non-emergency medical transportation for Central Florida appointments, dialysis, therapy, discharge, and mobility-assisted trips.">
-  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-nav-premium">
+  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-mobile-menu">
 </head>
 <body>
   <div class="ambient ambient-one"></div>
@@ -19,7 +19,12 @@
     <a class="brand" href="/" aria-label="TISATO Transportation Services home">
       <img src="/assets/tisato-logo-transparent-cropped.png" alt="TISATO Transportation Services INC">
     </a>
-    <nav class="site-nav" aria-label="Primary navigation">
+    <button class="nav-toggle" type="button" aria-label="Open navigation menu" aria-controls="primary-nav" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="site-nav" id="primary-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="#services">Services</a>
       <a href="#testimonials">Testimonial</a>
@@ -118,7 +123,7 @@
     <section class="schedule-strip" id="booking">
       <div>
         <p class="overline">Schedule My Ride</p>
-        <h2>Schedule the ride.<br>We&apos;ll handle the rest.</h2>
+        <h2>Schedule the ride.<br>We will handle the rest.</h2>
       </div>
       <a class="button primary" href="/booking">Schedule My Ride</a>
     </section>
@@ -130,17 +135,17 @@
       </div>
       <div class="operate-grid">
         <article>
-          <span class="step-number">01</span>
+          <span class="step-number">1</span>
           <h3>Scheduling your ride is simple.</h3>
           <p>Book online or call our dispatch team, and we will confirm your pickup as soon as possible.</p>
         </article>
         <article>
-          <span class="step-number">02</span>
+          <span class="step-number">2</span>
           <h3>On-time pickup, every time.</h3>
           <p>We assist you from your door to the vehicle for a smooth, stress-free pickup.</p>
         </article>
         <article>
-          <span class="step-number">03</span>
+          <span class="step-number">3</span>
           <h3>Arrive safely and comfortably.</h3>
           <p>Relax while we get you to your appointment with care.</p>
         </article>
@@ -407,13 +412,6 @@
           </div>
         </article>
       </div>
-      <div class="faq-support reveal-on-scroll">
-        <div>
-          <p class="overline">Need help planning the ride?</p>
-          <h3>Our care team can help coordinate the next step.</h3>
-        </div>
-        <a href="/booking">Schedule My Ride</a>
-      </div>
     </section>
 
     <section class="about-section" id="about">
@@ -445,6 +443,14 @@
         </p>
       </div>
     </section>
+
+    <div class="faq-support reveal-on-scroll">
+      <div>
+        <p class="overline">Need help planning the ride?</p>
+        <h3>Our care team can help coordinate the next step.</h3>
+      </div>
+      <a href="/booking">Schedule My Ride</a>
+    </div>
   </main>
 
   <footer class="site-footer" id="contact">

@@ -1,5 +1,6 @@
 const faqItems = document.querySelectorAll(".faq-item");
 const siteHeader = document.querySelector(".site-header");
+const navToggle = document.querySelector(".nav-toggle");
 const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
 const navSections = navLinks
   .map((link) => {
@@ -10,6 +11,13 @@ const navSections = navLinks
   .filter((item) => item && item.section);
 
 let navTicking = false;
+
+const setMobileNavOpen = (isOpen) => {
+  if (!siteHeader || !navToggle) return;
+  siteHeader.classList.toggle("nav-open", isOpen);
+  navToggle.setAttribute("aria-expanded", String(isOpen));
+  navToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+};
 
 const setActiveNavLink = (activeId) => {
   navLinks.forEach((link) => {
@@ -54,6 +62,20 @@ const requestNavUpdate = () => {
 
 updateNavState();
 window.addEventListener("scroll", requestNavUpdate, { passive: true });
+
+if (navToggle) {
+  navToggle.addEventListener("click", () => {
+    setMobileNavOpen(!siteHeader?.classList.contains("nav-open"));
+  });
+}
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      setMobileNavOpen(false);
+    }
+  });
+});
 
 const setFaqState = (item, expanded) => {
   const trigger = item.querySelector(".faq-trigger");
@@ -120,6 +142,10 @@ if ("IntersectionObserver" in window) {
 }
 
 window.addEventListener("resize", () => {
+  if (!window.matchMedia("(max-width: 760px)").matches) {
+    setMobileNavOpen(false);
+  }
+
   faqItems.forEach((item) => {
     if (!item.classList.contains("is-open")) return;
     const answer = item.querySelector(".faq-answer");

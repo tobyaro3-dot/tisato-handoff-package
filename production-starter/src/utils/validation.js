@@ -30,18 +30,50 @@ function todayString() {
   return `${year}-${month}-${day}`;
 }
 
-function timeToMinutes(value) {
-  const match = /^(\d{2}):(\d{2})$/.exec(String(value || ""));
+function parseTimeParts(value) {
+  const time = String(value || "").trim();
+  const nativeMatch = /^(\d{1,2}):(\d{2})$/.exec(time);
+  const amPmMatch = /^(\d{1,2}):(\d{2})\s*([ap])\.?m\.?$/i.exec(time);
+  const match = nativeMatch || amPmMatch;
   if (!match) return null;
-  const hours = Number(match[1]);
+
+  let hours = Number(match[1]);
   const minutes = Number(match[2]);
-  if (hours > 23 || minutes > 59) return null;
-  return hours * 60 + minutes;
+  if (minutes > 59) return null;
+
+  if (amPmMatch) {
+    const period = match[3].toLowerCase();
+    if (hours < 1 || hours > 12) return null;
+    if (period === "a" && hours === 12) hours = 0;
+    if (period === "p" && hours !== 12) hours += 12;
+  } else if (hours > 23) {
+    return null;
+  }
+
+  return { hours, minutes };
 }
 
-function currentMinutes() {
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
+function buildDateTime(dateValue, timeValue) {
+  const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateValue || ""));
+  const timeParts = parseTimeParts(timeValue);
+  if (!dateMatch || !timeParts) return null;
+
+  const year = Number(dateMatch[1]);
+  const month = Number(dateMatch[2]);
+  const day = Number(dateMatch[3]);
+  const date = new Date(year, month - 1, day, timeParts.hours, timeParts.minutes, 0, 0);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day ||
+    date.getHours() !== timeParts.hours ||
+    date.getMinutes() !== timeParts.minutes
+  ) {
+    return null;
+  }
+
+  return date;
 }
 
 export function validateBookingInput(input = {}) {
@@ -69,9 +101,8 @@ export function validateBookingInput(input = {}) {
   };
 
   const today = todayString();
-  const pickupMinutes = timeToMinutes(trip.pickupTime);
-  const appointmentMinutes = timeToMinutes(trip.appointmentTime);
-  const isToday = trip.pickupDate === today;
+  const pickupDateTime = buildDateTime(trip.pickupDate, trip.pickupTime);
+  const appointmentDateTime = buildDateTime(trip.pickupDate, trip.appointmentTime);
   const smsUpdatesOptIn = toBoolean(input.smsUpdatesOptIn ?? input.smsUpdates);
 
   if (!isValidName(passenger.firstName)) {
@@ -93,20 +124,17 @@ export function validateBookingInput(input = {}) {
   if (required(trip.pickupDate) && trip.pickupDate < today) {
     errors.pickupDate = "Pickup date cannot be in the past.";
   }
-  if (!required(trip.pickupTime) || pickupMinutes === null) {
+  if (!required(trip.pickupTime) || pickupDateTime === null) {
     errors.pickupTime = "Pickup time is required.";
-  } else if (isToday && pickupMinutes <= currentMinutes()) {
+  } else if (pickupDateTime < new Date()) {
     errors.pickupTime = "Pickup time must be later than the current time.";
   }
   if (!required(trip.pickupAddress)) errors.pickupAddress = "Pickup address is required.";
   if (!required(trip.dropoffAddress)) errors.dropoffAddress = "Drop-off address is required.";
   if (!SERVICE_TYPES.has(trip.serviceType)) errors.serviceType = "Please select a service type.";
-  if (!required(trip.appointmentTime) || appointmentMinutes === null) {
+  if (!required(trip.appointmentTime) || appointmentDateTime === null) {
     errors.appointmentTime = "Appointment time must be after pickup time.";
-  } else if (
-    (pickupMinutes !== null && appointmentMinutes <= pickupMinutes) ||
-    (isToday && appointmentMinutes <= currentMinutes())
-  ) {
+  } else if (pickupDateTime !== null && appointmentDateTime <= pickupDateTime) {
     errors.appointmentTime = "Appointment time must be after pickup time.";
   }
 

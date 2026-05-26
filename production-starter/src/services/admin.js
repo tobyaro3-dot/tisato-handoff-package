@@ -5,10 +5,28 @@ import { createSession, verifySession } from "../security/sessions.js";
 import { safeCompareText, verifyPassword } from "../security/passwords.js";
 import { cleanText } from "../utils/sanitize.js";
 
+const BCRYPT_HASH_PATTERN = /^\$2[ab]\$/;
+
 function verifyAdminPassword(password) {
   if (config.adminPasswordHash) return verifyPassword(password, config.adminPasswordHash);
   if (config.adminPassword) return safeCompareText(password, config.adminPassword);
   return false;
+}
+
+function normalizedAdminEmail() {
+  return cleanText(config.adminEmail, 254).toLowerCase();
+}
+
+function logAuthDebug(details) {
+  if (process.env.ADMIN_AUTH_DEBUG !== "true") return;
+
+  console.info("[admin-auth-debug]", {
+    adminEmailConfigured: details.adminEmailConfigured,
+    adminPasswordHashConfigured: details.adminPasswordHashConfigured,
+    adminPasswordHashBcryptFormat: details.adminPasswordHashBcryptFormat,
+    submittedEmailMatchesAdminEmail: details.submittedEmailMatchesAdminEmail,
+    passwordCompareResult: details.passwordCompareResult,
+  });
 }
 
 export async function loginAdmin(request, response, input = {}) {
@@ -39,9 +57,20 @@ export async function loginAdmin(request, response, input = {}) {
   }
 
   const email = cleanText(input.email, 254).toLowerCase();
-  const password = String(input.password || "");
+  const adminEmail = normalizedAdminEmail();
+  const password = String(input.password || "").trim();
+  const emailMatches = email === adminEmail;
+  const passwordMatches = verifyAdminPassword(password);
 
-  if (email !== config.adminEmail.toLowerCase() || !verifyAdminPassword(password)) {
+  logAuthDebug({
+    adminEmailConfigured: Boolean(adminEmail),
+    adminPasswordHashConfigured: Boolean(config.adminPasswordHash),
+    adminPasswordHashBcryptFormat: BCRYPT_HASH_PATTERN.test(config.adminPasswordHash),
+    submittedEmailMatchesAdminEmail: emailMatches,
+    passwordCompareResult: passwordMatches,
+  });
+
+  if (!emailMatches || !passwordMatches) {
     return {
       status: 401,
       body: {

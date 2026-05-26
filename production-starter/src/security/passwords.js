@@ -1,9 +1,11 @@
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
+import bcrypt from "bcryptjs";
 
 const HASH_VERSION = "pbkdf2_sha256";
 const ITERATIONS = 310000;
 const KEY_LENGTH = 32;
 const DIGEST = "sha256";
+const BCRYPT_PATTERN = /^\$2[aby]\$/;
 
 export function hashPassword(password) {
   const salt = randomBytes(16);
@@ -18,6 +20,10 @@ export function hashPassword(password) {
 
 export function verifyPassword(password, storedHash) {
   if (!storedHash || !password) return false;
+
+  if (BCRYPT_PATTERN.test(storedHash)) {
+    return bcrypt.compareSync(password, storedHash);
+  }
 
   const [version, iterationsText, saltText, hashText] = storedHash.split("$");
   if (version !== HASH_VERSION || !iterationsText || !saltText || !hashText) return false;

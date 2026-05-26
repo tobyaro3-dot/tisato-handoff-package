@@ -1,12 +1,34 @@
 const form = document.getElementById("bookingForm");
 const message = document.getElementById("bookingMessage");
 const pickupDateInput = form?.elements.pickupDate;
+const SERVICE_TIME_ZONE = "America/New_York";
+
+const serviceDateFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: SERVICE_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+const serviceDateTimeFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: SERVICE_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+function formatterParts(formatter, date) {
+  return Object.fromEntries(formatter.formatToParts(date).map((part) => [part.type, part.value]));
+}
 
 function todayString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
+  const parts = formatterParts(serviceDateFormatter, new Date());
+  const year = parts.year;
+  const month = parts.month;
+  const day = parts.day;
   return `${year}-${month}-${day}`;
 }
 
@@ -45,14 +67,26 @@ function buildDateTime(dateValue, timeValue) {
   const year = Number(dateMatch[1]);
   const month = Number(dateMatch[2]);
   const day = Number(dateMatch[3]);
-  const date = new Date(year, month - 1, day, timeParts.hours, timeParts.minutes, 0, 0);
+  const utcGuess = Date.UTC(year, month - 1, day, timeParts.hours, timeParts.minutes, 0, 0);
+  const offsetParts = formatterParts(serviceDateTimeFormatter, new Date(utcGuess));
+  const offsetWallTime = Date.UTC(
+    Number(offsetParts.year),
+    Number(offsetParts.month) - 1,
+    Number(offsetParts.day),
+    Number(offsetParts.hour),
+    Number(offsetParts.minute),
+    0,
+    0,
+  );
+  const date = new Date(utcGuess - (offsetWallTime - utcGuess));
+  const serviceParts = formatterParts(serviceDateTimeFormatter, date);
 
   if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day ||
-    date.getHours() !== timeParts.hours ||
-    date.getMinutes() !== timeParts.minutes
+    Number(serviceParts.year) !== year ||
+    Number(serviceParts.month) !== month ||
+    Number(serviceParts.day) !== day ||
+    Number(serviceParts.hour) !== timeParts.hours ||
+    Number(serviceParts.minute) !== timeParts.minutes
   ) {
     return null;
   }

@@ -50,19 +50,22 @@
       <form class="booking-form" id="bookingForm" novalidate>
         <div class="form-grid two">
           <label>
-            First name
+            First name <span class="required-marker" aria-hidden="true">*</span>
             <input name="firstName" autocomplete="given-name" required>
+            <span class="field-error" data-field-error="firstName"></span>
           </label>
           <label>
-            Last name
+            Last name <span class="required-marker" aria-hidden="true">*</span>
             <input name="lastName" autocomplete="family-name" required>
+            <span class="field-error" data-field-error="lastName"></span>
           </label>
           <label>
-            Email
-            <input name="email" type="email" autocomplete="email">
+            Email <span class="required-marker" aria-hidden="true">*</span>
+            <input name="email" type="email" autocomplete="email" required>
+            <span class="field-error" data-field-error="email"></span>
           </label>
           <label>
-            Phone
+            Phone <span class="required-marker" aria-hidden="true">*</span>
             <input name="phone" autocomplete="tel" required>
             <span class="field-error" data-field-error="phone"></span>
           </label>
@@ -70,37 +73,42 @@
 
         <div class="form-grid two">
           <label>
-            Pickup date
+            Pickup date <span class="required-marker" aria-hidden="true">*</span>
             <input name="pickupDate" type="date" required>
             <span class="field-error" data-field-error="pickupDate"></span>
           </label>
           <label>
-            Pickup time
+            Pickup time <span class="required-marker" aria-hidden="true">*</span>
             <input name="pickupTime" type="time" required>
+            <span class="field-error" data-field-error="pickupTime"></span>
           </label>
         </div>
 
         <label>
-          Pickup address
+          Pickup address <span class="required-marker" aria-hidden="true">*</span>
           <input name="pickupAddress" autocomplete="street-address" required>
+          <span class="field-error" data-field-error="pickupAddress"></span>
         </label>
         <label>
-          Drop-off address
+          Drop-off address <span class="required-marker" aria-hidden="true">*</span>
           <input name="dropoffAddress" required>
+          <span class="field-error" data-field-error="dropoffAddress"></span>
         </label>
 
         <div class="form-grid two">
           <label>
-            Service type
-            <select name="serviceType">
+            Service type <span class="required-marker" aria-hidden="true">*</span>
+            <select name="serviceType" required>
+              <option value="">Select service type</option>
               <option value="ambulatory">Ambulatory</option>
               <option value="wheelchair">Wheelchair</option>
               <option value="other">Other</option>
             </select>
+            <span class="field-error" data-field-error="serviceType"></span>
           </label>
           <label>
-            Appointment time
-            <input name="appointmentTime" type="time" placeholder="Optional">
+            Appointment time <span class="required-marker" aria-hidden="true">*</span>
+            <input name="appointmentTime" type="time" required>
             <span class="field-error" data-field-error="appointmentTime"></span>
           </label>
         </div>
@@ -116,8 +124,7 @@
           <textarea name="notes" rows="5" placeholder="Pickup instructions, appointment notes, special handling, or timing details."></textarea>
         </label>
 
-        <label class="terms"><input type="checkbox" name="acceptedTerms" required> I confirm TISATO Transportation Services may contact me about this request.</label>
-        <label class="terms"><input type="checkbox" name="smsUpdates"> I would like to receive SMS confirmation and updates about this ride request.</label>
+        <label class="terms"><input type="checkbox" name="smsUpdatesOptIn"> I would like to receive SMS confirmations and ride updates.</label>
 
         <div class="form-footer">
           <button class="button primary" type="submit">Submit Booking Request</button>

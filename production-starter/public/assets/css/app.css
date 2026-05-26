@@ -940,6 +940,11 @@ dd {
   font-weight: 900;
 }
 
+.required-marker {
+  color: var(--danger);
+  font-weight: 900;
+}
+
 .booking-form input,
 .booking-form select,
 .booking-form textarea,

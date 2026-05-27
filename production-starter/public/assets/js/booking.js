@@ -218,7 +218,7 @@ function formPayload(formElement) {
 
 function formatErrors(errors = {}) {
   const values = Object.values(errors);
-  return values.length ? values.join(" ") : "Please check the form and try again.";
+  return values.length ? "Please review the highlighted fields above." : "Please check the form and try again.";
 }
 
 if (pickupDateInput) {

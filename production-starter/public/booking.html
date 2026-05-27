@@ -7,7 +7,7 @@
   <meta name="description" content="Request non-emergency medical transportation from TISATO Transportation Services INC.">
   <link rel="icon" type="image/png" href="/assets/tisato-logo-transparent-cropped.png">
   <link rel="apple-touch-icon" href="/assets/tisato-logo-transparent-cropped.png">
-  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-motion-system">
+  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-sms-privacy">
 </head>
 <body>
   <div class="ambient ambient-one"></div>
@@ -126,7 +126,14 @@
           <textarea name="notes" rows="5" placeholder="Pickup instructions, appointment notes, special handling, or timing details."></textarea>
         </label>
 
-        <label class="terms"><input type="checkbox" name="smsUpdatesOptIn"> I would like to receive SMS confirmations and ride updates.</label>
+        <div class="terms sms-consent">
+          <label><input type="checkbox" name="smsUpdatesOptIn"> I would like to receive SMS confirmations and ride updates.</label>
+          <p>
+            By opting in, you agree to receive
+            <a href="/privacy-policy">SMS updates</a>
+            from TISATO Transportation Services. Reply STOP to opt out. Message &amp; data rates may apply.
+          </p>
+        </div>
 
         <div class="form-footer">
           <button class="button primary" type="submit">Submit Booking Request</button>
@@ -137,12 +144,16 @@
   </main>
 
   <footer class="site-footer" id="contact">
-    <img src="/assets/tisato-logo-stacked.png" alt="TISATO Transportation Services INC">
+    <img src="/assets/tisato-logo-transparent-cropped.png" alt="TISATO Transportation Services INC">
     <div>
       <strong>TISATO Transportation Services INC</strong>
       <span>4071 LB McLeod Rd, Ste D #220, Orlando, FL 32811</span>
       <a href="tel:+18448847286">(844) 884-7286</a>
       <a href="mailto:info@tisatotransportationservices.com">info@tisatotransportationservices.com</a>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-of-service">Terms of Service</a>
+      </nav>
     </div>
   </footer>
 

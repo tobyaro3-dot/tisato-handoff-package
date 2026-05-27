@@ -1,9 +1,20 @@
 import { addBooking, getBookings, updateBooking } from "../storage/bookings-store.js";
 import { recordAuditEvent } from "../storage/audit-store.js";
 import { getClientIp, checkRateLimit } from "../security/rate-limit.js";
-import { createId } from "../utils/ids.js";
+import { createCompactBookingId } from "../utils/ids.js";
 import { validateBookingInput, validateStatusInput } from "../utils/validation.js";
 import { sendBookingCreatedEmails, sendBookingStatusEmail } from "./email.js";
+
+async function createUniqueBookingId() {
+  const existingIds = new Set((await getBookings()).map((booking) => booking.id));
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const id = createCompactBookingId();
+    if (!existingIds.has(id)) return id;
+  }
+
+  throw new Error("Unable to generate a unique booking ID.");
+}
 
 export async function createBooking(request, input) {
   const ip = getClientIp(request);
@@ -35,7 +46,7 @@ export async function createBooking(request, input) {
 
   const now = new Date().toISOString();
   const booking = {
-    id: createId("TISATO"),
+    id: await createUniqueBookingId(),
     status: "pending",
     ...validation.value,
     adminNotes: [],

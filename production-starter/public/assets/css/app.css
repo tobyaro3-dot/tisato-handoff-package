@@ -468,11 +468,11 @@ main > section {
 }
 
 .hero-copy h1 {
-  font-size: clamp(2.25rem, 3.85vw, 4.35rem);
-  letter-spacing: -0.052em;
-  line-height: 1.02;
+  font-size: clamp(1.65rem, 2.15vw, 3rem);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
   margin-inline: auto;
-  max-width: 11.6ch;
+  max-width: 30ch;
 }
 
 .hero-reveal {
@@ -600,7 +600,7 @@ main > section {
 }
 
 .hero-media {
-  align-self: start;
+  align-self: center;
   background:
     radial-gradient(circle at 28% 30%, rgba(255, 250, 240, 0.86), transparent 14rem),
     radial-gradient(circle at 80% 72%, rgba(116, 64, 168, 0.16), transparent 12rem),
@@ -614,7 +614,7 @@ main > section {
   overflow: hidden;
   padding: clamp(12px, 2.4vw, 22px);
   position: relative;
-  transform: translate(34px, -34px);
+  transform: translate(34px, 20px);
 }
 
 .hero-media::before {
@@ -665,9 +665,9 @@ main > section {
   height: 100%;
   mix-blend-mode: multiply;
   object-fit: cover;
-  object-position: 62% 34%;
+  object-position: 56% 48%;
   position: relative;
-  transform: translate(5%, -7%) scale(1.18);
+  transform: translate(2%, 0) scale(1.12);
   width: 100%;
   z-index: 1;
 }

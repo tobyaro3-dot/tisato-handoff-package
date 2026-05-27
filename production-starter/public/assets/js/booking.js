@@ -221,9 +221,28 @@ function formatErrors(errors = {}) {
   return values.length ? "Please review the highlighted fields above." : "Please check the form and try again.";
 }
 
+function openNativePicker(input) {
+  if (!input || typeof input.showPicker !== "function") {
+    input?.focus();
+    return;
+  }
+
+  try {
+    input.focus();
+    input.showPicker();
+  } catch (error) {
+    input.focus();
+  }
+}
+
 if (pickupDateInput) {
   pickupDateInput.min = todayString();
 }
+
+["pickupDate", "pickupTime", "appointmentTime"].forEach((name) => {
+  const input = form.elements[name];
+  input?.addEventListener("click", () => openNativePicker(input));
+});
 
 [
   "firstName",

@@ -2,13 +2,21 @@ const faqItems = document.querySelectorAll(".faq-item");
 const siteHeader = document.querySelector(".site-header");
 const navToggle = document.querySelector(".nav-toggle");
 const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
-const navSections = navLinks
-  .map((link) => {
-    const href = link.getAttribute("href") || "";
-    const id = href === "/" ? "home" : href.startsWith("#") ? href.slice(1) : "";
-    return id ? { id, link, section: document.getElementById(id) } : null;
-  })
-  .filter((item) => item && item.section);
+const sideNavRail = document.querySelector(".side-nav-rail");
+const sideNavLinks = Array.from(document.querySelectorAll(".side-nav-rail a"));
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const scrollNavThreshold = 120;
+
+const getLinkSectionId = (link) => {
+  const href = link.getAttribute("href") || "";
+  if (href === "/" || href === "#home") return "home";
+  return href.startsWith("#") ? href.slice(1) : "";
+};
+
+const sectionIds = Array.from(new Set([...navLinks, ...sideNavLinks].map(getLinkSectionId).filter(Boolean)));
+const navSections = sectionIds
+  .map((id) => ({ id, section: document.getElementById(id) }))
+  .filter((item) => item.section);
 
 let navTicking = false;
 
@@ -21,9 +29,20 @@ const setMobileNavOpen = (isOpen) => {
 
 const setActiveNavLink = (activeId) => {
   navLinks.forEach((link) => {
-    const href = link.getAttribute("href") || "";
-    const linkId = href === "/" ? "home" : href.startsWith("#") ? href.slice(1) : "";
+    const linkId = getLinkSectionId(link);
     const isActive = linkId !== "home" && linkId === activeId;
+
+    link.classList.toggle("is-active", isActive);
+    if (isActive) {
+      link.setAttribute("aria-current", activeId === "home" ? "page" : "true");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+
+  sideNavLinks.forEach((link) => {
+    const linkId = getLinkSectionId(link);
+    const isActive = linkId === activeId;
 
     link.classList.toggle("is-active", isActive);
     if (isActive) {
@@ -36,9 +55,14 @@ const setActiveNavLink = (activeId) => {
 
 const updateNavState = () => {
   navTicking = false;
+  const isScrolled = window.scrollY > scrollNavThreshold;
 
   if (siteHeader) {
-    siteHeader.classList.toggle("is-scrolled", window.scrollY > 80);
+    siteHeader.classList.toggle("is-scrolled", isScrolled);
+  }
+
+  if (sideNavRail) {
+    sideNavRail.classList.toggle("is-visible", isScrolled);
   }
 
   const activeSection = navSections.reduce((current, item) => {
@@ -74,6 +98,24 @@ navLinks.forEach((link) => {
     if (window.matchMedia("(max-width: 760px)").matches) {
       setMobileNavOpen(false);
     }
+  });
+});
+
+sideNavLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const sectionId = getLinkSectionId(link);
+    if (!sectionId) return;
+
+    const targetSection = document.getElementById(sectionId);
+    if (!targetSection) return;
+
+    event.preventDefault();
+    targetSection.scrollIntoView({
+      behavior: prefersReducedMotion.matches ? "auto" : "smooth",
+      block: "start"
+    });
+    window.history.pushState(null, "", `#${sectionId}`);
+    setActiveNavLink(sectionId);
   });
 });
 

@@ -59,8 +59,9 @@ async function requestJson(path, options = {}) {
 }
 
 function statusOptions(current) {
+  const selectedStatus = statuses.includes(current) ? current : "pending";
   return statuses
-    .map((status) => `<option value="${status}" ${status === current ? "selected" : ""}>${status.replaceAll("_", " ")}</option>`)
+    .map((status) => `<option value="${status}" ${status === selectedStatus ? "selected" : ""}>${status.replaceAll("_", " ")}</option>`)
     .join("");
 }
 
@@ -88,26 +89,29 @@ function renderBookings(bookings) {
 
   bookingTable.innerHTML = bookings
     .map((booking) => {
-      const passenger = `${booking.passenger.firstName} ${booking.passenger.lastName}`;
+      const passenger = booking.passenger || {};
+      const trip = booking.trip || {};
+      const passengerName = `${passenger.firstName || "Unknown"} ${passenger.lastName || "Passenger"}`;
+      const status = statuses.includes(booking.status) ? booking.status : "pending";
       return `
         <article class="booking-row" data-booking-id="${escapeHtml(booking.id)}">
           <div>
-            <span class="status-pill">${escapeHtml(booking.status.replaceAll("_", " "))}</span>
-            <h3>${escapeHtml(passenger)}</h3>
+            <span class="status-pill">${escapeHtml(status.replaceAll("_", " "))}</span>
+            <h3>${escapeHtml(passengerName)}</h3>
             <div class="booking-meta">
               <span>${escapeHtml(booking.id)}</span>
-              <span>${escapeHtml(booking.passenger.phone)}</span>
-              <span>${escapeHtml(booking.trip.pickupDate)} ${escapeHtml(booking.trip.pickupTime)}</span>
-              <span>${escapeHtml(booking.trip.serviceType)}</span>
+              <span>${escapeHtml(passenger.phone)}</span>
+              <span>${escapeHtml(trip.pickupDate)} ${escapeHtml(trip.pickupTime)}</span>
+              <span>${escapeHtml(trip.serviceType)}</span>
             </div>
-            <p><strong>Pickup:</strong> ${escapeHtml(booking.trip.pickupAddress)}</p>
-            <p><strong>Drop-off:</strong> ${escapeHtml(booking.trip.dropoffAddress)}</p>
-            <p>${escapeHtml(booking.trip.notes || "No notes provided.")}</p>
+            <p><strong>Pickup:</strong> ${escapeHtml(trip.pickupAddress || "Not provided")}</p>
+            <p><strong>Drop-off:</strong> ${escapeHtml(trip.dropoffAddress || "Not provided")}</p>
+            <p>${escapeHtml(trip.notes || "No notes provided.")}</p>
           </div>
           <div class="row-actions">
             <label>
               Status
-              <select data-status>${statusOptions(booking.status)}</select>
+              <select data-status>${statusOptions(status)}</select>
             </label>
             <label>
               Admin note

@@ -9,6 +9,23 @@ import {
 
 const bookingsPath = join(config.dataDir, "bookings.json");
 
+export function getBookingStorageStatus() {
+  if (config.databaseUrl) {
+    return {
+      available: true,
+      mode: "postgres",
+      persistent: true,
+    };
+  }
+
+  const productionRequiresDatabase = config.isVercel;
+  return {
+    available: !productionRequiresDatabase,
+    mode: productionRequiresDatabase ? "unconfigured" : "json",
+    persistent: false,
+  };
+}
+
 export async function getBookings() {
   if (config.databaseUrl) return getPostgresBookings();
 

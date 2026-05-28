@@ -1,4 +1,9 @@
-import { addBooking, getBookings, updateBooking } from "../storage/bookings-store.js";
+import {
+  addBooking,
+  getBookingStorageStatus,
+  getBookings,
+  updateBooking,
+} from "../storage/bookings-store.js";
 import { recordAuditEvent } from "../storage/audit-store.js";
 import { getClientIp, checkRateLimit } from "../security/rate-limit.js";
 import { createCompactBookingId } from "../utils/ids.js";
@@ -16,7 +21,95 @@ async function createUniqueBookingId() {
   throw new Error("Unable to generate a unique booking ID.");
 }
 
+const STATUS_VALUES = new Set([
+  "pending",
+  "needs_information",
+  "confirmed",
+  "in_progress",
+  "completed",
+  "cancelled",
+]);
+
+function normalizeStatus(value) {
+  const status = String(value || "pending").trim().toLowerCase().replaceAll(" ", "_");
+  return STATUS_VALUES.has(status) ? status : "pending";
+}
+
+function splitName(value) {
+  const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] || "",
+    lastName: parts.slice(1).join(" "),
+  };
+}
+
+function normalizeServiceType(value) {
+  const serviceType = String(value || "").trim().toLowerCase();
+  if (["ambulatory", "wheelchair", "other"].includes(serviceType)) return serviceType;
+  if (serviceType.includes("wheelchair")) return "wheelchair";
+  if (serviceType.includes("ambulatory")) return "ambulatory";
+  return serviceType || "other";
+}
+
+function normalizeBookingRecord(booking) {
+  const passenger = booking.passenger || {};
+  const trip = booking.trip || {};
+  const legacyName = splitName(booking.name);
+
+  return {
+    ...booking,
+    id: String(booking.id || booking.bookingId || ""),
+    status: normalizeStatus(booking.status),
+    passenger: {
+      firstName: passenger.firstName || booking.firstName || legacyName.firstName || "Unknown",
+      lastName: passenger.lastName || booking.lastName || legacyName.lastName || "Passenger",
+      email: passenger.email || booking.email || "",
+      phone: passenger.phone || booking.phone || "",
+    },
+    trip: {
+      pickupDate: trip.pickupDate || booking.pickupDate || booking.date || "",
+      pickupTime: trip.pickupTime || booking.pickupTime || booking.time || "",
+      pickupAddress: trip.pickupAddress || booking.pickupAddress || booking.pickup || "",
+      dropoffAddress:
+        trip.dropoffAddress || booking.dropoffAddress || booking.destination || booking.dropoff || "",
+      serviceType: normalizeServiceType(trip.serviceType || booking.serviceType || booking.mobility),
+      appointmentTime: trip.appointmentTime || booking.appointmentTime || "",
+      returnTrip: Boolean(trip.returnTrip ?? booking.returnTrip ?? booking.tripType === "Recurring"),
+      notes: trip.notes || booking.notes || "",
+    },
+    accessibility: {
+      wheelchair: Boolean(booking.accessibility?.wheelchair ?? booking.wheelchair),
+    },
+    consent: booking.consent || {
+      contactPermission: true,
+      smsUpdatesOptIn: Boolean(booking.smsUpdatesOptIn ?? booking.smsConsent),
+      smsUpdates: Boolean(booking.smsUpdatesOptIn ?? booking.smsConsent),
+    },
+    adminNotes: Array.isArray(booking.adminNotes) ? booking.adminNotes : [],
+    source: booking.source || {},
+    createdAt: booking.createdAt || "",
+    updatedAt: booking.updatedAt || booking.createdAt || "",
+  };
+}
+
+export function bookingStorageUnavailableResponse() {
+  const storage = getBookingStorageStatus();
+  if (storage.available) return null;
+
+  return {
+    status: 503,
+    body: {
+      success: false,
+      error: "Booking storage is not configured. Set DATABASE_URL to a Neon Postgres connection string.",
+      storage,
+    },
+  };
+}
+
 export async function createBooking(request, input) {
+  const unavailable = bookingStorageUnavailableResponse();
+  if (unavailable) return unavailable;
+
   const ip = getClientIp(request);
   const limit = checkRateLimit(`booking:${ip}`, {
     limit: 8,
@@ -78,7 +171,7 @@ export async function createBooking(request, input) {
 }
 
 export async function listBookings() {
-  return getBookings();
+  return (await getBookings()).map(normalizeBookingRecord);
 }
 
 export async function updateBookingStatus(id, input, admin) {

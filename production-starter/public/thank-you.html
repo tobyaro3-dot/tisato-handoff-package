@@ -6,7 +6,7 @@
   <title>Booking Request Received | TISATO</title>
   <link rel="icon" type="image/png" href="/assets/tisato-logo-transparent-cropped.png">
   <link rel="apple-touch-icon" href="/assets/tisato-logo-transparent-cropped.png">
-  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-20260524b">
+  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-chatbot-v1">
 </head>
 <body>
   <div class="ambient ambient-one"></div>
@@ -51,6 +51,7 @@
     const params = new URLSearchParams(window.location.search);
     document.getElementById("bookingId").textContent = params.get("bookingId") || "Unavailable";
   </script>
+  <script src="/assets/js/chatbot.js"></script>
 </body>
 </html>
 

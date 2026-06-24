@@ -190,10 +190,9 @@ export function validateBookingInput(input = {}) {
 
 export function validateStatusInput(input = {}) {
   const allowedStatuses = new Set([
-    "pending",
-    "needs_information",
-    "confirmed",
-    "in_progress",
+    "new_request",
+    "contacted",
+    "scheduled",
     "completed",
     "cancelled",
   ]);

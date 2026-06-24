@@ -9,13 +9,20 @@ const logoutButton = document.getElementById("logoutButton");
 const refreshButton = document.getElementById("refreshButton");
 
 const statuses = [
-  "pending",
-  "needs_information",
-  "confirmed",
-  "in_progress",
+  "new_request",
+  "contacted",
+  "scheduled",
   "completed",
   "cancelled",
 ];
+
+const statusLabels = {
+  new_request: "New Request",
+  contacted: "Contacted",
+  scheduled: "Scheduled",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -59,10 +66,25 @@ async function requestJson(path, options = {}) {
 }
 
 function statusOptions(current) {
-  const selectedStatus = statuses.includes(current) ? current : "pending";
+  const selectedStatus = statuses.includes(current) ? current : "new_request";
   return statuses
-    .map((status) => `<option value="${status}" ${status === selectedStatus ? "selected" : ""}>${status.replaceAll("_", " ")}</option>`)
+    .map((status) => `<option value="${status}" ${status === selectedStatus ? "selected" : ""}>${statusLabels[status]}</option>`)
     .join("");
+}
+
+function statusLabel(status) {
+  return statusLabels[status] || statusLabels.new_request;
+}
+
+function formatTimestamp(value) {
+  if (!value) return "Not available";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not available";
+
+  return date.toLocaleString([], {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 }
 
 function renderMetrics(bookings) {
@@ -73,8 +95,8 @@ function renderMetrics(bookings) {
 
   metrics.innerHTML = [
     ["Total", bookings.length],
-    ["Pending", counts.pending || 0],
-    ["Confirmed", counts.confirmed || 0],
+    ["New Request", counts.new_request || 0],
+    ["Scheduled", counts.scheduled || 0],
     ["Completed", counts.completed || 0],
   ]
     .map(([label, value]) => `<article class="metric"><span>${label}</span><strong>${value}</strong></article>`)
@@ -92,17 +114,18 @@ function renderBookings(bookings) {
       const passenger = booking.passenger || {};
       const trip = booking.trip || {};
       const passengerName = `${passenger.firstName || "Unknown"} ${passenger.lastName || "Passenger"}`;
-      const status = statuses.includes(booking.status) ? booking.status : "pending";
+      const status = statuses.includes(booking.status) ? booking.status : "new_request";
       return `
         <article class="booking-row" data-booking-id="${escapeHtml(booking.id)}">
           <div>
-            <span class="status-pill">${escapeHtml(status.replaceAll("_", " "))}</span>
+            <span class="status-pill">${escapeHtml(statusLabel(status))}</span>
             <h3>${escapeHtml(passengerName)}</h3>
             <div class="booking-meta">
               <span>${escapeHtml(booking.id)}</span>
               <span>${escapeHtml(passenger.phone)}</span>
               <span>${escapeHtml(trip.pickupDate)} ${escapeHtml(trip.pickupTime)}</span>
               <span>${escapeHtml(trip.serviceType)}</span>
+              <span>Last updated: ${escapeHtml(formatTimestamp(booking.updatedAt))}</span>
             </div>
             <p><strong>Pickup:</strong> ${escapeHtml(trip.pickupAddress || "Not provided")}</p>
             <p><strong>Drop-off:</strong> ${escapeHtml(trip.dropoffAddress || "Not provided")}</p>

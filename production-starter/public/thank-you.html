@@ -20,7 +20,12 @@
     <a class="brand" href="/" aria-label="TISATO Transportation Services home">
       <img src="/assets/tisato-logo-header.png?v=confirmation-logo-v1" alt="TISATO Transportation Services INC">
     </a>
-    <nav class="site-nav" aria-label="Primary navigation">
+    <button class="nav-toggle" type="button" aria-controls="primary-nav" aria-expanded="false" aria-label="Open navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="site-nav" id="primary-nav" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/#services">Services</a>
       <a href="/#contact">Contact Us</a>
@@ -51,6 +56,7 @@
     const params = new URLSearchParams(window.location.search);
     document.getElementById("bookingId").textContent = params.get("bookingId") || "Unavailable";
   </script>
+  <script src="/assets/js/site.js"></script>
   <script src="/assets/js/chatbot.js"></script>
 </body>
 </html>

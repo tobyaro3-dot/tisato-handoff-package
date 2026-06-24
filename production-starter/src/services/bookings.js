@@ -8,7 +8,11 @@ import { recordAuditEvent } from "../storage/audit-store.js";
 import { getClientIp, checkRateLimit } from "../security/rate-limit.js";
 import { createCompactBookingId } from "../utils/ids.js";
 import { validateBookingInput, validateStatusInput } from "../utils/validation.js";
-import { sendBookingCreatedEmails, sendBookingStatusEmail } from "./email.js";
+import { sendBookingCreatedEmails } from "./email.js";
+import {
+  sendCeoRideRequestNotification,
+  sendCustomerRideRequestConfirmation,
+} from "./smtp-notifications.js";
 
 async function createUniqueBookingId() {
   const existingIds = new Set((await getBookings()).map((booking) => booking.id));
@@ -22,17 +26,19 @@ async function createUniqueBookingId() {
 }
 
 const STATUS_VALUES = new Set([
-  "pending",
-  "needs_information",
-  "confirmed",
-  "in_progress",
+  "new_request",
+  "contacted",
+  "scheduled",
   "completed",
   "cancelled",
 ]);
 
 function normalizeStatus(value) {
-  const status = String(value || "pending").trim().toLowerCase().replaceAll(" ", "_");
-  return STATUS_VALUES.has(status) ? status : "pending";
+  const status = String(value || "").trim().toLowerCase().replaceAll(" ", "_");
+  if (status === "pending") return "new_request";
+  if (status === "needs_information") return "contacted";
+  if (status === "confirmed" || status === "in_progress") return "scheduled";
+  return STATUS_VALUES.has(status) ? status : "new_request";
 }
 
 function splitName(value) {
@@ -140,7 +146,7 @@ export async function createBooking(request, input) {
   const now = new Date().toISOString();
   const booking = {
     id: await createUniqueBookingId(),
-    status: "pending",
+    status: "new_request",
     ...validation.value,
     adminNotes: [],
     source: {
@@ -157,6 +163,8 @@ export async function createBooking(request, input) {
     passenger: `${booking.passenger.firstName} ${booking.passenger.lastName}`,
   });
   const queuedEmails = await sendBookingCreatedEmails(booking);
+  await sendCeoRideRequestNotification(booking);
+  await sendCustomerRideRequestConfirmation(booking);
 
   return {
     status: 201,
@@ -219,17 +227,12 @@ export async function updateBookingStatus(id, input, admin) {
     admin: admin.email,
   });
 
-  const shouldNotifyPassenger = ["confirmed", "needs_information", "cancelled"].includes(
-    updated.status
-  );
-  const queuedEmail = shouldNotifyPassenger ? await sendBookingStatusEmail(updated) : null;
-
   return {
     status: 200,
     body: {
       success: true,
       booking: updated,
-      queuedEmail: Boolean(queuedEmail),
+      queuedEmail: false,
     },
   };
 }

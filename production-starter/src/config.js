@@ -1,9 +1,38 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const defaultDataDir = process.env.VERCEL ? join(tmpdir(), "tisato-data") : join(rootDir, "data");
+const localEnvPath = join(rootDir, ".env");
+
+function loadLocalEnvFile() {
+  if (!existsSync(localEnvPath)) return;
+
+  for (const line of readFileSync(localEnvPath, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    let value = trimmed.slice(separatorIndex + 1).trim();
+    if (!key || process.env[key] !== undefined) continue;
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    process.env[key] = value;
+  }
+}
+
+loadLocalEnvFile();
 
 export const config = {
   port: Number(process.env.PORT || 8080),
@@ -13,6 +42,13 @@ export const config = {
   dataDir: process.env.DATA_DIR || defaultDataDir,
   databaseUrl: process.env.DATABASE_URL || "",
   isVercel: Boolean(process.env.VERCEL),
+  smtpHost: process.env.SMTP_HOST || "",
+  smtpPort: Number(process.env.SMTP_PORT || 465),
+  smtpUser: process.env.SMTP_USER || "",
+  smtpPass: process.env.SMTP_PASS || "",
+  ceoNotificationEmails:
+    process.env.CEO_NOTIFICATION_EMAILS ||
+    "tayo@tisatotransportationservices.com,joy@tisatotransportationservices.com,tisatotransportationservices@gmail.com",
   businessName: process.env.BUSINESS_NAME || "TISATO Transportation Services INC",
   dispatchEmail: process.env.DISPATCH_EMAIL || "info@tisatotransportationservices.com",
   dispatchPhone: process.env.DISPATCH_PHONE || "+18448847286",

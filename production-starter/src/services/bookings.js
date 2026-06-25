@@ -185,8 +185,9 @@ export async function createBooking(request, input) {
   console.info("[booking] Customer confirmation finished.", {
     bookingId: booking.id,
     customerConfirmationAttempted: customerConfirmation.attempted,
-    sent: customerConfirmation.sent,
-    skipped: customerConfirmation.skipped,
+    customerConfirmationSent: customerConfirmation.sent,
+    customerConfirmationSkipped: customerConfirmation.skipped,
+    customerConfirmationSkippedReason: customerConfirmation.skippedReason,
   });
 
   return {

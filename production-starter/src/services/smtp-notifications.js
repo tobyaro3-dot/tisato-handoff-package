@@ -513,24 +513,46 @@ export async function sendCustomerRideRequestConfirmation(booking) {
     console.info("[smtp-notification] Customer email missing; confirmation skipped.", {
       bookingId: booking.id,
       customerEmailPresent: false,
+      customerEmailFieldName: customerEmail.fieldName,
       customerConfirmationAttempted: false,
+      customerConfirmationSent: false,
+      customerConfirmationSkipped: true,
+      customerConfirmationSkippedReason: "customer_email_missing",
     });
-    return { sent: false, skipped: true, attempted: false };
+    return {
+      sent: false,
+      skipped: true,
+      attempted: false,
+      skippedReason: "customer_email_missing",
+    };
   }
 
   if (!smtpCredentialsConfigured()) {
     console.warn("[smtp-notification] SMTP configuration incomplete; customer confirmation skipped.", {
       bookingId: booking.id,
       customerEmailPresent: true,
+      customerEmailFieldName: customerEmail.fieldName,
       customerConfirmationAttempted: false,
+      customerConfirmationSent: false,
+      customerConfirmationSkipped: true,
+      customerConfirmationSkippedReason: "smtp_config_incomplete",
     });
-    return { sent: false, skipped: true, attempted: false };
+    return {
+      sent: false,
+      skipped: true,
+      attempted: false,
+      skippedReason: "smtp_config_incomplete",
+    };
   }
 
   console.info("[smtp-notification] Customer ride request confirmation attempted.", {
     bookingId: booking.id,
     customerEmailPresent: true,
+    customerEmailFieldName: customerEmail.fieldName,
     customerConfirmationAttempted: true,
+    customerConfirmationSent: false,
+    customerConfirmationSkipped: false,
+    smtpTransporter: "shared-nodemailer-transport",
   });
 
   try {
@@ -544,18 +566,26 @@ export async function sendCustomerRideRequestConfirmation(booking) {
 
     console.info("[smtp-notification] Customer ride request confirmation sent.", {
       bookingId: booking.id,
+      customerEmailPresent: true,
+      customerEmailFieldName: customerEmail.fieldName,
+      customerConfirmationAttempted: true,
       customerConfirmationSent: true,
+      customerConfirmationSkipped: false,
       messageId: info.messageId,
     });
-    return { sent: true, skipped: false, attempted: true };
+    return { sent: true, skipped: false, attempted: true, skippedReason: null };
   } catch (error) {
     console.error("[smtp-notification] Failed to send customer ride request confirmation.", {
       bookingId: booking.id,
+      customerEmailPresent: true,
+      customerEmailFieldName: customerEmail.fieldName,
+      customerConfirmationAttempted: true,
       customerConfirmationSent: false,
+      customerConfirmationSkipped: false,
       code: error?.code || null,
       command: error?.command || null,
       message: error?.message || "Unknown SMTP error",
     });
-    return { sent: false, skipped: false, attempted: true };
+    return { sent: false, skipped: false, attempted: true, skippedReason: null };
   }
 }

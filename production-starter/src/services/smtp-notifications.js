@@ -552,6 +552,7 @@ export async function sendCustomerRideRequestConfirmation(booking) {
     customerConfirmationAttempted: true,
     customerConfirmationSent: false,
     customerConfirmationSkipped: false,
+    customerConfirmationBccEnabled: true,
     smtpTransporter: "shared-nodemailer-transport",
   });
 
@@ -559,6 +560,7 @@ export async function sendCustomerRideRequestConfirmation(booking) {
     const info = await getTransport().sendMail({
       from: `"TISATO Transportation Services" <${config.smtpUser}>`,
       to: customerEmail.email,
+      bcc: config.smtpUser,
       subject: "TISATO Ride Request Received",
       text: renderCustomerTextEmail(booking),
       html: renderCustomerHtmlEmail(booking),
@@ -571,6 +573,7 @@ export async function sendCustomerRideRequestConfirmation(booking) {
       customerConfirmationAttempted: true,
       customerConfirmationSent: true,
       customerConfirmationSkipped: false,
+      customerConfirmationBccEnabled: true,
       messageId: info.messageId,
     });
     return { sent: true, skipped: false, attempted: true, skippedReason: null };

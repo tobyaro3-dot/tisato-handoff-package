@@ -6,8 +6,7 @@ import { tmpdir } from "node:os";
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const defaultDataDir = process.env.VERCEL ? join(tmpdir(), "tisato-data") : join(rootDir, "data");
 const localEnvPath = join(rootDir, ".env");
-const defaultInternalNotificationEmails =
-  "tayo@tisatotransportationservices.com,tisatotransportationservices@gmail.com";
+const defaultInternalNotificationEmails = "info@tisatotransportationservices.com";
 
 function loadLocalEnvFile() {
   if (!existsSync(localEnvPath)) return false;

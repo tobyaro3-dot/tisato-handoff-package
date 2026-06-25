@@ -115,7 +115,7 @@ export function validateBookingInput(input = {}) {
   const passenger = {
     firstName: cleanText(input.firstName, 80),
     lastName: cleanText(input.lastName, 80),
-    email: normalizeEmail(input.email),
+    email: normalizeEmail(input.email ?? input.customerEmail ?? input.patientEmail ?? input.passengerEmail),
     phone: normalizePhone(input.phone),
   };
 

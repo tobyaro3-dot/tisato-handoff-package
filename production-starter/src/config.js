@@ -6,9 +6,11 @@ import { tmpdir } from "node:os";
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const defaultDataDir = process.env.VERCEL ? join(tmpdir(), "tisato-data") : join(rootDir, "data");
 const localEnvPath = join(rootDir, ".env");
+const defaultInternalNotificationEmails =
+  "tayo@tisatotransportationservices.com,tisatotransportationservices@gmail.com";
 
 function loadLocalEnvFile() {
-  if (!existsSync(localEnvPath)) return;
+  if (!existsSync(localEnvPath)) return false;
 
   for (const line of readFileSync(localEnvPath, "utf8").split(/\r?\n/)) {
     const trimmed = line.trim();
@@ -30,9 +32,11 @@ function loadLocalEnvFile() {
 
     process.env[key] = value;
   }
+
+  return true;
 }
 
-loadLocalEnvFile();
+const localEnvLoaded = loadLocalEnvFile();
 
 export const config = {
   port: Number(process.env.PORT || 8080),
@@ -48,7 +52,9 @@ export const config = {
   smtpPass: process.env.SMTP_PASS || "",
   ceoNotificationEmails:
     process.env.CEO_NOTIFICATION_EMAILS ||
-    "tayo@tisatotransportationservices.com,joy@tisatotransportationservices.com,tisatotransportationservices@gmail.com",
+    process.env.CEO_NOTIFICATION_EMAIL ||
+    defaultInternalNotificationEmails,
+  localEnvLoaded,
   businessName: process.env.BUSINESS_NAME || "TISATO Transportation Services INC",
   dispatchEmail: process.env.DISPATCH_EMAIL || "info@tisatotransportationservices.com",
   dispatchPhone: process.env.DISPATCH_PHONE || "+18448847286",

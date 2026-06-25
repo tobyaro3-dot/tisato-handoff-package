@@ -3,6 +3,7 @@ import { config } from "../config.js";
 import { escapeHtml } from "../utils/sanitize.js";
 
 let transport;
+let smtpSummaryLogged = false;
 
 const NOT_PROVIDED = "Not provided";
 
@@ -10,7 +11,7 @@ function smtpCredentialsConfigured() {
   return Boolean(config.smtpHost && config.smtpPort && config.smtpUser && config.smtpPass);
 }
 
-function internalRecipients() {
+export function getInternalNotificationRecipients() {
   return String(config.ceoNotificationEmails || "")
     .split(",")
     .map((email) => email.trim())
@@ -18,11 +19,31 @@ function internalRecipients() {
 }
 
 function internalNotificationConfigured() {
-  return smtpCredentialsConfigured() && internalRecipients().length > 0;
+  return smtpCredentialsConfigured() && getInternalNotificationRecipients().length > 0;
+}
+
+export function getSmtpNotificationDiagnostics() {
+  return {
+    envLoaded: config.localEnvLoaded,
+    smtpConfigPresent: {
+      host: Boolean(config.smtpHost),
+      port: Boolean(config.smtpPort),
+      user: Boolean(config.smtpUser),
+      pass: Boolean(config.smtpPass),
+    },
+    internalRecipientCount: getInternalNotificationRecipients().length,
+  };
+}
+
+function logSmtpSummary() {
+  if (smtpSummaryLogged) return;
+  smtpSummaryLogged = true;
+  console.info("[smtp-notification] SMTP environment summary.", getSmtpNotificationDiagnostics());
 }
 
 function getTransport() {
   if (!transport) {
+    logSmtpSummary();
     transport = nodemailer.createTransport({
       host: config.smtpHost,
       port: config.smtpPort,
@@ -133,6 +154,37 @@ function preferredContactMethod(booking) {
   if (booking.passenger?.phone) return "Phone";
   if (booking.passenger?.email) return "Email";
   return NOT_PROVIDED;
+}
+
+function resolveCustomerEmail(booking) {
+  if (booking.passenger?.email) {
+    return {
+      email: booking.passenger.email,
+      fieldName: "passenger.email",
+    };
+  }
+
+  for (const fieldName of ["email", "customerEmail", "patientEmail", "passengerEmail"]) {
+    if (booking[fieldName]) {
+      return {
+        email: booking[fieldName],
+        fieldName,
+      };
+    }
+  }
+
+  return {
+    email: "",
+    fieldName: "not_found",
+  };
+}
+
+export function getCustomerEmailDiagnostics(booking) {
+  const customerEmail = resolveCustomerEmail(booking);
+  return {
+    customerEmailPresent: Boolean(customerEmail.email),
+    customerEmailFieldName: customerEmail.fieldName,
+  };
 }
 
 function adminNotesText(adminNotes) {
@@ -393,17 +445,26 @@ function renderCustomerHtmlEmail(booking) {
 }
 
 export async function sendCeoRideRequestNotification(booking) {
+  logSmtpSummary();
+  const recipients = getInternalNotificationRecipients();
+
   if (!internalNotificationConfigured()) {
     console.warn("[smtp-notification] SMTP configuration incomplete; internal notification skipped.", {
       bookingId: booking.id,
+      internalRecipientCount: recipients.length,
     });
     return { sent: 0, failed: 0, skipped: true };
   }
 
+  console.info("[smtp-notification] Internal ride request notification attempted.", {
+    bookingId: booking.id,
+    internalRecipientCount: recipients.length,
+  });
+
   let sent = 0;
   let failed = 0;
 
-  for (const recipient of internalRecipients()) {
+  for (const recipient of recipients) {
     try {
       await getTransport().sendMail({
         from: `"TISATO Ride Requests" <${config.smtpUser}>`,
@@ -413,6 +474,11 @@ export async function sendCeoRideRequestNotification(booking) {
         html: renderInternalHtmlEmail(booking),
       });
       sent += 1;
+      console.info("[smtp-notification] Internal ride request notification sent.", {
+        bookingId: booking.id,
+        sent,
+        failed,
+      });
     } catch (error) {
       failed += 1;
       console.error("[smtp-notification] Failed to send internal ride request notification.", {
@@ -434,24 +500,43 @@ export async function sendCeoRideRequestNotification(booking) {
 }
 
 export async function sendCustomerRideRequestConfirmation(booking) {
-  if (!booking.passenger?.email) {
+  logSmtpSummary();
+  const customerEmail = resolveCustomerEmail(booking);
+  const customerEmailDiagnostics = getCustomerEmailDiagnostics(booking);
+
+  console.info("[smtp-notification] Customer email diagnostics.", {
+    bookingId: booking.id,
+    ...customerEmailDiagnostics,
+  });
+
+  if (!customerEmail.email) {
     console.info("[smtp-notification] Customer email missing; confirmation skipped.", {
       bookingId: booking.id,
+      customerEmailPresent: false,
+      customerConfirmationAttempted: false,
     });
-    return { sent: false, skipped: true };
+    return { sent: false, skipped: true, attempted: false };
   }
 
   if (!smtpCredentialsConfigured()) {
     console.warn("[smtp-notification] SMTP configuration incomplete; customer confirmation skipped.", {
       bookingId: booking.id,
+      customerEmailPresent: true,
+      customerConfirmationAttempted: false,
     });
-    return { sent: false, skipped: true };
+    return { sent: false, skipped: true, attempted: false };
   }
+
+  console.info("[smtp-notification] Customer ride request confirmation attempted.", {
+    bookingId: booking.id,
+    customerEmailPresent: true,
+    customerConfirmationAttempted: true,
+  });
 
   try {
     const info = await getTransport().sendMail({
       from: `"TISATO Transportation Services" <${config.smtpUser}>`,
-      to: booking.passenger.email,
+      to: customerEmail.email,
       subject: "TISATO Ride Request Received",
       text: renderCustomerTextEmail(booking),
       html: renderCustomerHtmlEmail(booking),
@@ -459,16 +544,18 @@ export async function sendCustomerRideRequestConfirmation(booking) {
 
     console.info("[smtp-notification] Customer ride request confirmation sent.", {
       bookingId: booking.id,
+      customerConfirmationSent: true,
       messageId: info.messageId,
     });
-    return { sent: true, skipped: false };
+    return { sent: true, skipped: false, attempted: true };
   } catch (error) {
     console.error("[smtp-notification] Failed to send customer ride request confirmation.", {
       bookingId: booking.id,
+      customerConfirmationSent: false,
       code: error?.code || null,
       command: error?.command || null,
       message: error?.message || "Unknown SMTP error",
     });
-    return { sent: false, skipped: false };
+    return { sent: false, skipped: false, attempted: true };
   }
 }

@@ -10,6 +10,8 @@ import { createCompactBookingId } from "../utils/ids.js";
 import { validateBookingInput, validateStatusInput } from "../utils/validation.js";
 import { sendBookingCreatedEmails } from "./email.js";
 import {
+  getCustomerEmailDiagnostics,
+  getSmtpNotificationDiagnostics,
   sendCeoRideRequestNotification,
   sendCustomerRideRequestConfirmation,
 } from "./smtp-notifications.js";
@@ -158,13 +160,34 @@ export async function createBooking(request, input) {
   };
 
   await addBooking(booking);
+  console.info("[booking] Booking saved.", {
+    bookingId: booking.id,
+    status: booking.status,
+    ...getCustomerEmailDiagnostics(booking),
+  });
   await recordAuditEvent("booking.created", {
     bookingId: booking.id,
     passenger: `${booking.passenger.firstName} ${booking.passenger.lastName}`,
   });
   const queuedEmails = await sendBookingCreatedEmails(booking);
-  await sendCeoRideRequestNotification(booking);
-  await sendCustomerRideRequestConfirmation(booking);
+  console.info("[booking] SMTP notification config snapshot.", {
+    bookingId: booking.id,
+    ...getSmtpNotificationDiagnostics(),
+  });
+  const internalNotification = await sendCeoRideRequestNotification(booking);
+  console.info("[booking] Internal notification finished.", {
+    bookingId: booking.id,
+    sent: internalNotification.sent,
+    failed: internalNotification.failed,
+    skipped: internalNotification.skipped,
+  });
+  const customerConfirmation = await sendCustomerRideRequestConfirmation(booking);
+  console.info("[booking] Customer confirmation finished.", {
+    bookingId: booking.id,
+    customerConfirmationAttempted: customerConfirmation.attempted,
+    sent: customerConfirmation.sent,
+    skipped: customerConfirmation.skipped,
+  });
 
   return {
     status: 201,

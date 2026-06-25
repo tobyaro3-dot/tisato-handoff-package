@@ -89,7 +89,6 @@ updateNavState();
 window.addEventListener("scroll", requestNavUpdate, { passive: true });
 
 if (heroVideo) {
-  const heroVideoShell = heroVideo.closest(".hero-video-shell");
   heroVideo.muted = true;
   heroVideo.defaultMuted = true;
   heroVideo.loop = true;
@@ -105,29 +104,25 @@ if (heroVideo) {
   heroVideo.setAttribute("controlslist", "nodownload noplaybackrate nofullscreen");
 
   const playHeroVideo = () => {
+    if (prefersReducedMotion.matches) {
+      heroVideo.pause();
+      heroVideo.removeAttribute("autoplay");
+      return;
+    }
+
     const playRequest = heroVideo.play();
     if (playRequest?.catch) {
       playRequest.catch(() => undefined);
     }
   };
 
-  heroVideo.addEventListener("playing", () => {
-    heroVideoShell?.classList.add("is-video-playing");
-  });
-
-  heroVideo.addEventListener("pause", () => {
-    heroVideoShell?.classList.remove("is-video-playing");
-  });
-
-  heroVideo.addEventListener("error", () => {
-    heroVideoShell?.classList.remove("is-video-playing");
-  });
-
   if (heroVideo.readyState > 1) {
     playHeroVideo();
   } else {
     heroVideo.addEventListener("canplay", playHeroVideo, { once: true });
   }
+
+  prefersReducedMotion.addEventListener("change", playHeroVideo);
 }
 
 if (navToggle) {

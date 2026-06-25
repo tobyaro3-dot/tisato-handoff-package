@@ -4,9 +4,13 @@ const loginForm = document.getElementById("loginForm");
 const loginMessage = document.getElementById("loginMessage");
 const dashboardMessage = document.getElementById("dashboardMessage");
 const bookingTable = document.getElementById("bookingTable");
+const customerList = document.getElementById("customerList");
+const customerDetail = document.getElementById("customerDetail");
 const metrics = document.getElementById("metrics");
 const logoutButton = document.getElementById("logoutButton");
 const refreshButton = document.getElementById("refreshButton");
+const adminSectionLinks = document.querySelectorAll("[data-admin-section-link]");
+const adminSections = document.querySelectorAll(".admin-section");
 
 const statuses = [
   "new_request",
@@ -23,6 +27,8 @@ const statusLabels = {
   completed: "Completed",
   cancelled: "Cancelled",
 };
+
+let currentCustomers = [];
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -47,6 +53,20 @@ function setAuthed(isAuthed) {
   loginPanel.hidden = isAuthed;
   dashboardPanel.hidden = !isAuthed;
   logoutButton.hidden = !isAuthed;
+}
+
+function showAdminSection(sectionId) {
+  adminSections.forEach((section) => {
+    section.hidden = section.id !== sectionId;
+  });
+
+  adminSectionLinks.forEach((link) => {
+    const active = link.dataset.adminSectionLink === sectionId;
+    link.classList.toggle("active", active);
+    if (link.tagName === "BUTTON") {
+      link.setAttribute("aria-pressed", String(active));
+    }
+  });
 }
 
 async function requestJson(path, options = {}) {
@@ -122,6 +142,7 @@ function renderBookings(bookings) {
             <h3>${escapeHtml(passengerName)}</h3>
             <div class="booking-meta">
               <span>${escapeHtml(booking.id)}</span>
+              ${booking.customerId ? `<span>Customer: ${escapeHtml(booking.customerId)}</span>` : ""}
               <span>${escapeHtml(passenger.phone)}</span>
               <span>${escapeHtml(trip.pickupDate)} ${escapeHtml(trip.pickupTime)}</span>
               <span>${escapeHtml(trip.serviceType)}</span>
@@ -147,11 +168,121 @@ function renderBookings(bookings) {
     .join("");
 }
 
+function renderCustomerList(customers) {
+  currentCustomers = customers;
+
+  if (!customers.length) {
+    customerList.innerHTML = "<p>No customers yet.</p>";
+    customerDetail.innerHTML = "<p>Select a customer to view booking history.</p>";
+    return;
+  }
+
+  customerList.innerHTML = customers
+    .map(
+      (customer) => `
+        <button class="customer-row" type="button" data-customer-id="${escapeHtml(customer.id)}">
+          <strong>${escapeHtml(customer.fullName || "Unknown Passenger")}</strong>
+          <span>${escapeHtml(customer.phone || "No phone")}</span>
+          <span>${escapeHtml(customer.email || "No email")}</span>
+          <span>${escapeHtml(customer.totalBookings || 0)} booking(s)</span>
+          <span>Last booking: ${escapeHtml(formatTimestamp(customer.lastBookingDate))}</span>
+        </button>`
+    )
+    .join("");
+
+  renderCustomerSummary(customers[0]);
+  loadCustomerDetail(customers[0].id).catch((error) => setDashboardMessage(error.message, "error"));
+}
+
+function renderCustomerSummary(customer) {
+  if (!customer) {
+    customerDetail.innerHTML = "<p>Select a customer to view booking history.</p>";
+    return;
+  }
+
+  customerDetail.innerHTML = `
+    <article class="customer-card">
+      <span class="status-pill">Customer</span>
+      <h3>${escapeHtml(customer.fullName || "Unknown Passenger")}</h3>
+      <div class="booking-meta">
+        <span>${escapeHtml(customer.id)}</span>
+        <span>${escapeHtml(customer.phone || "No phone")}</span>
+        <span>${escapeHtml(customer.email || "No email")}</span>
+        <span>${escapeHtml(customer.preferredContactMethod || "No contact preference")}</span>
+        <span>${escapeHtml(customer.mobilityType || "No mobility type")}</span>
+      </div>
+      <p><strong>Total bookings:</strong> ${escapeHtml(customer.totalBookings || 0)}</p>
+      <p><strong>Last booking:</strong> ${escapeHtml(formatTimestamp(customer.lastBookingDate))}</p>
+      <p><strong>Notes:</strong> ${escapeHtml(customer.notes || "No notes provided.")}</p>
+      <div class="booking-table compact-history">
+        <p>Loading booking history...</p>
+      </div>
+    </article>`;
+}
+
+function renderCustomerDetail(detail) {
+  const { customer, bookings } = detail;
+  const history = bookings.length
+    ? bookings
+        .map(
+          (booking) => `
+            <article class="history-row">
+              <div>
+                <strong>${escapeHtml(booking.id)}</strong>
+                <span class="status-pill">${escapeHtml(statusLabel(booking.status))}</span>
+              </div>
+              <p>${escapeHtml(booking.appointmentDate || "No date")} ${escapeHtml(booking.appointmentTime || "")}</p>
+              <p><strong>Pickup:</strong> ${escapeHtml(booking.pickupAddress || "Not provided")}</p>
+              <p><strong>Drop-off:</strong> ${escapeHtml(booking.dropoffAddress || "Not provided")}</p>
+              <p>${escapeHtml(booking.tripType || "One-way")} · ${escapeHtml(booking.mobilityType || "No mobility type")}</p>
+            </article>`
+        )
+        .join("")
+    : "<p>No linked bookings found for this customer.</p>";
+
+  customerDetail.innerHTML = `
+    <article class="customer-card">
+      <span class="status-pill">Customer</span>
+      <h3>${escapeHtml(customer.fullName || "Unknown Passenger")}</h3>
+      <div class="booking-meta">
+        <span>${escapeHtml(customer.id)}</span>
+        <span>${escapeHtml(customer.phone || "No phone")}</span>
+        <span>${escapeHtml(customer.email || "No email")}</span>
+        <span>${escapeHtml(customer.preferredContactMethod || "No contact preference")}</span>
+        <span>${escapeHtml(customer.mobilityType || "No mobility type")}</span>
+      </div>
+      <p><strong>Total bookings:</strong> ${escapeHtml(customer.totalBookings || 0)}</p>
+      <p><strong>Last booking:</strong> ${escapeHtml(formatTimestamp(customer.lastBookingDate))}</p>
+      <p><strong>Notes:</strong> ${escapeHtml(customer.notes || "No notes provided.")}</p>
+      <div class="booking-table compact-history">${history}</div>
+    </article>`;
+}
+
+async function loadCustomerDetail(customerId) {
+  document
+    .querySelectorAll("[data-customer-id]")
+    .forEach((row) => row.classList.toggle("active", row.dataset.customerId === customerId));
+  const result = await requestJson(`/api/admin/customers/${encodeURIComponent(customerId)}`);
+  renderCustomerDetail(result);
+}
+
+async function loadCustomers() {
+  const result = await requestJson("/api/admin/customers");
+  renderCustomerList(result.customers);
+}
+
 async function loadBookings() {
   setDashboardMessage("Loading bookings...");
   const result = await requestJson("/api/admin/bookings");
   renderMetrics(result.bookings);
   renderBookings(result.bookings);
+  try {
+    await loadCustomers();
+  } catch (error) {
+    customerList.innerHTML = "<p>No customers yet.</p>";
+    customerDetail.innerHTML = "<p>Customer history could not be loaded.</p>";
+    console.error(error);
+  }
   setDashboardMessage(`Loaded ${result.bookings.length} booking request(s).`, "success");
 }
 
@@ -191,6 +322,19 @@ refreshButton.addEventListener("click", () => {
   loadBookings().catch((error) => setDashboardMessage(error.message, "error"));
 });
 
+adminSectionLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const sectionId = link.dataset.adminSectionLink;
+    if (!sectionId) return;
+
+    event.preventDefault();
+    showAdminSection(sectionId);
+    if (sectionId === "customers") {
+      loadCustomers().catch((error) => setDashboardMessage(error.message, "error"));
+    }
+  });
+});
+
 bookingTable.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-update]");
   if (!button) return;
@@ -213,6 +357,18 @@ bookingTable.addEventListener("click", async (event) => {
     setDashboardMessage(error.message, "error");
   } finally {
     button.disabled = false;
+  }
+});
+
+customerList.addEventListener("click", async (event) => {
+  const row = event.target.closest("[data-customer-id]");
+  if (!row) return;
+
+  renderCustomerSummary(currentCustomers.find((customer) => customer.id === row.dataset.customerId));
+  try {
+    await loadCustomerDetail(row.dataset.customerId);
+  } catch (error) {
+    setDashboardMessage(error.message, "error");
   }
 });
 

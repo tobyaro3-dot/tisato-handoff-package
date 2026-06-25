@@ -4,6 +4,7 @@ import {
   listBookings,
   updateBookingStatus,
 } from "../services/bookings.js";
+import { getCustomerDetail, listCustomers } from "../services/customers.js";
 import { loginAdmin, logoutAdmin, requireAdmin } from "../services/admin.js";
 import { readJsonBody } from "./body.js";
 import { json } from "./responses.js";
@@ -56,6 +57,44 @@ export function registerRoutes(router) {
     }
 
     json(response, 200, { success: true, bookings: await listBookings() });
+  });
+
+  router.register("GET", "/api/admin/customers", async (request, response) => {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      json(response, 401, { success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    json(response, 200, { success: true, customers: await listCustomers() });
+  });
+
+  router.register("GET", "/api/admin/customers/:id", async (request, response, context) => {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      json(response, 401, { success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    const detail = await getCustomerDetail(context.params.id, await listBookings());
+    if (!detail) {
+      json(response, 404, { success: false, error: "Customer not found." });
+      return;
+    }
+
+    json(response, 200, { success: true, ...detail });
   });
 
   router.register("PATCH", "/api/admin/bookings/:id", async (request, response, context) => {

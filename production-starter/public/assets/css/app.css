@@ -2565,7 +2565,10 @@ dd {
 .queue-panel,
 .login-panel,
 .metric,
-.booking-row {
+.booking-row,
+.customer-row,
+.customer-card,
+.history-row {
   border-radius: var(--radius-lg);
 }
 
@@ -2576,7 +2579,10 @@ dd {
 .admin-operator span,
 .metric span,
 .booking-meta,
-.booking-row p {
+.booking-row p,
+.customer-row span,
+.customer-card p,
+.history-row p {
   color: var(--muted);
 }
 
@@ -2599,6 +2605,33 @@ dd {
   margin-top: 30px;
 }
 
+.admin-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.admin-section-nav button {
+  background: rgba(255, 250, 240, 0.92);
+  border: 1px solid rgba(61, 26, 120, 0.18);
+  border-radius: 999px;
+  color: var(--purple);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  padding: 10px 16px;
+}
+
+.admin-section-nav button.active {
+  background: var(--purple);
+  color: var(--paper);
+}
+
+.admin-section[hidden] {
+  display: none;
+}
+
 .metric {
   padding: 18px;
 }
@@ -2612,6 +2645,57 @@ dd {
 .booking-table {
   display: grid;
   gap: 16px;
+}
+
+.customer-layout {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(240px, 0.34fr) minmax(0, 1fr);
+}
+
+.customer-list {
+  display: grid;
+  gap: 10px;
+}
+
+.customer-row {
+  background: var(--paper);
+  border: 1px solid rgba(61, 26, 120, 0.14);
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  text-align: left;
+}
+
+.customer-row.active,
+.customer-row:focus-visible {
+  border-color: var(--purple);
+  outline: none;
+}
+
+.customer-card,
+.history-row {
+  background: var(--paper);
+  border: 1px solid rgba(61, 26, 120, 0.14);
+  padding: 18px;
+}
+
+.compact-history {
+  margin-top: 18px;
+}
+
+.history-row {
+  display: grid;
+  gap: 6px;
+}
+
+.history-row > div {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
 }
 
 .booking-row {
@@ -3340,7 +3424,8 @@ dd {
   .form-grid.two,
   .check-grid,
   .metric-row,
-  .booking-row {
+  .booking-row,
+  .customer-layout {
     grid-template-columns: 1fr;
   }
 

@@ -33,6 +33,7 @@ function toIso(value) {
 function mapRow(row) {
   return {
     id: row.id,
+    customerId: row.customer_id || "",
     status: row.status,
     passenger: fromJson(row.passenger, {}),
     trip: fromJson(row.trip, {}),
@@ -65,6 +66,8 @@ export async function ensureBookingsSchema() {
   `;
   await sql`CREATE INDEX IF NOT EXISTS bookings_created_at_idx ON bookings (created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS bookings_status_idx ON bookings (status)`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS customer_id TEXT NOT NULL DEFAULT ''`;
+  await sql`CREATE INDEX IF NOT EXISTS bookings_customer_id_idx ON bookings (customer_id)`;
 
   schemaReady = true;
 }
@@ -84,6 +87,7 @@ export async function addPostgresBooking(booking) {
   await sql`
     INSERT INTO bookings (
       id,
+      customer_id,
       status,
       passenger,
       trip,
@@ -96,6 +100,7 @@ export async function addPostgresBooking(booking) {
     )
     VALUES (
       ${booking.id},
+      ${booking.customerId || ""},
       ${booking.status},
       ${toJson(booking.passenger)}::jsonb,
       ${toJson(booking.trip)}::jsonb,
@@ -123,6 +128,7 @@ export async function updatePostgresBooking(id, updater) {
     UPDATE bookings
     SET
       status = ${updated.status},
+      customer_id = ${updated.customerId || ""},
       passenger = ${toJson(updated.passenger)}::jsonb,
       trip = ${toJson(updated.trip)}::jsonb,
       accessibility = ${toJson(updated.accessibility)}::jsonb,

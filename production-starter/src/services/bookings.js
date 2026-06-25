@@ -8,6 +8,7 @@ import { recordAuditEvent } from "../storage/audit-store.js";
 import { getClientIp, checkRateLimit } from "../security/rate-limit.js";
 import { createCompactBookingId } from "../utils/ids.js";
 import { validateBookingInput, validateStatusInput } from "../utils/validation.js";
+import { linkBookingToCustomer } from "./customers.js";
 import { sendBookingCreatedEmails } from "./email.js";
 import {
   getCustomerEmailDiagnostics,
@@ -67,6 +68,7 @@ function normalizeBookingRecord(booking) {
   return {
     ...booking,
     id: String(booking.id || booking.bookingId || ""),
+    customerId: booking.customerId || booking.customer_id || "",
     status: normalizeStatus(booking.status),
     passenger: {
       firstName: passenger.firstName || booking.firstName || legacyName.firstName || "Unknown",
@@ -98,6 +100,29 @@ function normalizeBookingRecord(booking) {
     createdAt: booking.createdAt || "",
     updatedAt: booking.updatedAt || booking.createdAt || "",
   };
+}
+
+async function attachCustomerId(booking) {
+  try {
+    const customer = await linkBookingToCustomer(booking);
+    if (!customer?.id) return booking;
+
+    console.info("[booking] Customer linked.", {
+      bookingId: booking.id,
+      customerId: customer.id,
+    });
+    return {
+      ...booking,
+      customerId: customer.id,
+    };
+  } catch (error) {
+    console.error("[booking] Customer linking failed; booking will still be saved.", {
+      bookingId: booking.id,
+      code: error?.code || null,
+      message: error?.message || "Unknown customer linking error",
+    });
+    return booking;
+  }
 }
 
 export function bookingStorageUnavailableResponse() {
@@ -146,7 +171,7 @@ export async function createBooking(request, input) {
   }
 
   const now = new Date().toISOString();
-  const booking = {
+  let booking = {
     id: await createUniqueBookingId(),
     status: "new_request",
     ...validation.value,
@@ -158,6 +183,8 @@ export async function createBooking(request, input) {
     createdAt: now,
     updatedAt: now,
   };
+
+  booking = await attachCustomerId(booking);
 
   await addBooking(booking);
   console.info("[booking] Booking saved.", {

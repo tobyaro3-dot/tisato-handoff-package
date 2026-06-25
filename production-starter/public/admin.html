@@ -15,7 +15,8 @@
         <img src="/assets/tisato-logo-stacked.png" alt="TISATO Transportation Services">
       </a>
       <nav>
-        <a class="active" href="#queue">Booking Queue</a>
+        <a class="active" href="#queue" data-admin-section-link="queue">Bookings</a>
+        <a href="#customers" data-admin-section-link="customers">Customers</a>
         <a href="/">Public Site</a>
         <a href="/thank-you">Confirmation</a>
         <button id="logoutButton" class="side-nav-button" type="button" hidden>Log Out</button>
@@ -61,7 +62,11 @@
 
       <section id="dashboardPanel" hidden>
         <section class="metric-row" id="metrics"></section>
-        <section class="admin-workspace" id="queue">
+        <nav class="admin-section-nav" aria-label="Admin sections">
+          <button class="active" type="button" data-admin-section-link="queue">Bookings</button>
+          <button type="button" data-admin-section-link="customers">Customers</button>
+        </nav>
+        <section class="admin-workspace admin-section" id="queue">
           <div class="queue-panel">
             <div class="panel-heading">
               <div>
@@ -72,6 +77,20 @@
             </div>
             <div id="bookingTable" class="booking-table"></div>
             <p id="dashboardMessage" class="form-message" role="status"></p>
+          </div>
+        </section>
+        <section class="admin-workspace admin-section" id="customers" hidden>
+          <div class="queue-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="overline">Customer history</p>
+                <h2>Customers</h2>
+              </div>
+            </div>
+            <div class="customer-layout">
+              <div id="customerList" class="customer-list"></div>
+              <div id="customerDetail" class="customer-detail"></div>
+            </div>
           </div>
         </section>
       </section>

@@ -4,6 +4,7 @@ const navToggle = document.querySelector(".nav-toggle");
 const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
 const sideNavRail = document.querySelector(".side-nav-rail");
 const sideNavLinks = Array.from(document.querySelectorAll(".side-nav-rail a"));
+const heroVideo = document.querySelector(".hero-video");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const scrollNavThreshold = 120;
 
@@ -86,6 +87,31 @@ const requestNavUpdate = () => {
 
 updateNavState();
 window.addEventListener("scroll", requestNavUpdate, { passive: true });
+
+if (heroVideo) {
+  heroVideo.muted = true;
+  heroVideo.defaultMuted = true;
+  heroVideo.loop = true;
+  heroVideo.autoplay = true;
+  heroVideo.playsInline = true;
+  heroVideo.controls = false;
+  heroVideo.removeAttribute("controls");
+  heroVideo.setAttribute("playsinline", "");
+  heroVideo.setAttribute("preload", "auto");
+
+  const playHeroVideo = () => {
+    const playRequest = heroVideo.play();
+    if (playRequest?.catch) {
+      playRequest.catch(() => undefined);
+    }
+  };
+
+  if (heroVideo.readyState > 1) {
+    playHeroVideo();
+  } else {
+    heroVideo.addEventListener("canplay", playHeroVideo, { once: true });
+  }
+}
 
 if (navToggle) {
   navToggle.addEventListener("click", () => {

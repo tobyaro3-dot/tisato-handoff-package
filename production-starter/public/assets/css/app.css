@@ -791,6 +791,7 @@ main > section {
   object-fit: cover;
   object-position: 56% 48%;
   position: relative;
+  pointer-events: none;
   transform: translate(2%, 0) scale(1.12);
   width: 100%;
   z-index: 1;

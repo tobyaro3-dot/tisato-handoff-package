@@ -89,6 +89,7 @@ updateNavState();
 window.addEventListener("scroll", requestNavUpdate, { passive: true });
 
 if (heroVideo) {
+  const heroVideoShell = heroVideo.closest(".hero-video-shell");
   heroVideo.muted = true;
   heroVideo.defaultMuted = true;
   heroVideo.loop = true;
@@ -109,6 +110,18 @@ if (heroVideo) {
       playRequest.catch(() => undefined);
     }
   };
+
+  heroVideo.addEventListener("playing", () => {
+    heroVideoShell?.classList.add("is-video-playing");
+  });
+
+  heroVideo.addEventListener("pause", () => {
+    heroVideoShell?.classList.remove("is-video-playing");
+  });
+
+  heroVideo.addEventListener("error", () => {
+    heroVideoShell?.classList.remove("is-video-playing");
+  });
 
   if (heroVideo.readyState > 1) {
     playHeroVideo();

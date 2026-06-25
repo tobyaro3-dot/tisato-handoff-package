@@ -797,6 +797,15 @@ main > section {
   z-index: 1;
 }
 
+.hero-video::-webkit-media-controls,
+.hero-video::-webkit-media-controls-panel,
+.hero-video::-webkit-media-controls-play-button,
+.hero-video::-webkit-media-controls-start-playback-button {
+  -webkit-appearance: none;
+  display: none !important;
+  opacity: 0;
+}
+
 .media-note {
   align-items: center;
   background: rgba(255, 253, 248, 0.86);

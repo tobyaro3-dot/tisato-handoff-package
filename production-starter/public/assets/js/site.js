@@ -97,7 +97,11 @@ if (heroVideo) {
   heroVideo.controls = false;
   heroVideo.removeAttribute("controls");
   heroVideo.setAttribute("playsinline", "");
+  heroVideo.setAttribute("webkit-playsinline", "");
   heroVideo.setAttribute("preload", "auto");
+  heroVideo.setAttribute("disablepictureinpicture", "");
+  heroVideo.setAttribute("disableremoteplayback", "");
+  heroVideo.setAttribute("controlslist", "nodownload noplaybackrate nofullscreen");
 
   const playHeroVideo = () => {
     const playRequest = heroVideo.play();

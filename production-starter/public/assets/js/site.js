@@ -24,6 +24,7 @@ let navTicking = false;
 const setMobileNavOpen = (isOpen) => {
   if (!siteHeader || !navToggle) return;
   siteHeader.classList.toggle("nav-open", isOpen);
+  document.body.classList.toggle("mobile-nav-lock", isOpen);
   navToggle.setAttribute("aria-expanded", String(isOpen));
   navToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 };
@@ -130,6 +131,23 @@ if (navToggle) {
     setMobileNavOpen(!siteHeader?.classList.contains("nav-open"));
   });
 }
+
+document.addEventListener("pointerdown", (event) => {
+  if (!siteHeader?.classList.contains("nav-open")) return;
+  if (!window.matchMedia("(max-width: 760px)").matches) return;
+
+  const clickedInsideDrawer = event.target.closest(".site-nav");
+  const clickedToggle = event.target.closest(".nav-toggle");
+  if (clickedInsideDrawer || clickedToggle) return;
+
+  setMobileNavOpen(false);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    setMobileNavOpen(false);
+  }
+});
 
 navLinks.forEach((link) => {
   link.addEventListener("click", () => {

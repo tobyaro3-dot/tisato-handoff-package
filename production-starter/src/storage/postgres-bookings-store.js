@@ -39,6 +39,10 @@ function mapRow(row) {
     trip: fromJson(row.trip, {}),
     accessibility: fromJson(row.accessibility, {}),
     consent: fromJson(row.consent, {}),
+    rideDetails: fromJson(row.ride_details, {}),
+    payment: fromJson(row.payment, {}),
+    facility: fromJson(row.facility, {}),
+    operations: fromJson(row.operations, {}),
     adminNotes: fromJson(row.admin_notes, []),
     source: fromJson(row.source, {}),
     createdAt: toIso(row.created_at),
@@ -58,6 +62,10 @@ export async function ensureBookingsSchema() {
       trip JSONB NOT NULL,
       accessibility JSONB NOT NULL,
       consent JSONB NOT NULL,
+      ride_details JSONB NOT NULL DEFAULT '{}'::jsonb,
+      payment JSONB NOT NULL DEFAULT '{}'::jsonb,
+      facility JSONB NOT NULL DEFAULT '{}'::jsonb,
+      operations JSONB NOT NULL DEFAULT '{}'::jsonb,
       admin_notes JSONB NOT NULL DEFAULT '[]'::jsonb,
       source JSONB NOT NULL,
       created_at TIMESTAMPTZ NOT NULL,
@@ -67,6 +75,10 @@ export async function ensureBookingsSchema() {
   await sql`CREATE INDEX IF NOT EXISTS bookings_created_at_idx ON bookings (created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS bookings_status_idx ON bookings (status)`;
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS customer_id TEXT NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS ride_details JSONB NOT NULL DEFAULT '{}'::jsonb`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS payment JSONB NOT NULL DEFAULT '{}'::jsonb`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS facility JSONB NOT NULL DEFAULT '{}'::jsonb`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS operations JSONB NOT NULL DEFAULT '{}'::jsonb`;
   await sql`CREATE INDEX IF NOT EXISTS bookings_customer_id_idx ON bookings (customer_id)`;
 
   schemaReady = true;
@@ -93,6 +105,10 @@ export async function addPostgresBooking(booking) {
       trip,
       accessibility,
       consent,
+      ride_details,
+      payment,
+      facility,
+      operations,
       admin_notes,
       source,
       created_at,
@@ -106,6 +122,10 @@ export async function addPostgresBooking(booking) {
       ${toJson(booking.trip)}::jsonb,
       ${toJson(booking.accessibility)}::jsonb,
       ${toJson(booking.consent)}::jsonb,
+      ${toJson(booking.rideDetails || {})}::jsonb,
+      ${toJson(booking.payment || {})}::jsonb,
+      ${toJson(booking.facility || {})}::jsonb,
+      ${toJson(booking.operations || {})}::jsonb,
       ${toJson(booking.adminNotes || [])}::jsonb,
       ${toJson(booking.source)}::jsonb,
       ${booking.createdAt},
@@ -133,6 +153,10 @@ export async function updatePostgresBooking(id, updater) {
       trip = ${toJson(updated.trip)}::jsonb,
       accessibility = ${toJson(updated.accessibility)}::jsonb,
       consent = ${toJson(updated.consent)}::jsonb,
+      ride_details = ${toJson(updated.rideDetails || {})}::jsonb,
+      payment = ${toJson(updated.payment || {})}::jsonb,
+      facility = ${toJson(updated.facility || {})}::jsonb,
+      operations = ${toJson(updated.operations || {})}::jsonb,
       admin_notes = ${toJson(updated.adminNotes || [])}::jsonb,
       source = ${toJson(updated.source)}::jsonb,
       created_at = ${updated.createdAt},

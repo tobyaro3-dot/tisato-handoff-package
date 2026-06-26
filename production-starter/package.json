@@ -8,6 +8,7 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "build": "npm run check",
+    "smoke:admin": "node scripts/smoke-admin-system.js",
     "db:init": "node scripts/init-db.js",
     "hash-password": "node scripts/hash-password.js",
     "check": "node scripts/check.js"

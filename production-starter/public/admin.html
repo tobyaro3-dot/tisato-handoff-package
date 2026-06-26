@@ -6,7 +6,7 @@
   <title>TISATO Admin Portal</title>
   <link rel="icon" type="image/png" href="/assets/tisato-logo-transparent-cropped.png">
   <link rel="apple-touch-icon" href="/assets/tisato-logo-transparent-cropped.png">
-  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-20260524b">
+  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-admin-reliability-v1">
 </head>
 <body class="admin-reference-body">
   <main class="admin-reference-shell live-admin-shell">
@@ -17,6 +17,8 @@
       <nav>
         <a class="active" href="#queue" data-admin-section-link="queue">Bookings</a>
         <a href="#customers" data-admin-section-link="customers">Customers</a>
+        <a href="#rideArchive" data-admin-section-link="rideArchive">Ride Archive</a>
+        <a href="#analytics" data-admin-section-link="analytics">Analytics</a>
         <a href="/">Public Site</a>
         <a href="/thank-you">Confirmation</a>
         <button id="logoutButton" class="side-nav-button" type="button" hidden>Log Out</button>
@@ -65,7 +67,16 @@
         <nav class="admin-section-nav" aria-label="Admin sections">
           <button class="active" type="button" data-admin-section-link="queue">Bookings</button>
           <button type="button" data-admin-section-link="customers">Customers</button>
+          <button type="button" data-admin-section-link="rideArchive">Ride Archive</button>
+          <button type="button" data-admin-section-link="analytics">Analytics</button>
         </nav>
+        <section class="admin-global-search" aria-label="Admin global search">
+          <label>
+            Search admin records
+            <input id="adminGlobalSearch" type="search" placeholder="Booking ID, passenger, customer, phone, email, facility, address">
+          </label>
+          <div id="adminGlobalSearchResults" class="global-search-results" hidden></div>
+        </section>
         <section class="admin-workspace admin-section" id="queue">
           <div class="queue-panel">
             <div class="panel-heading">
@@ -91,6 +102,424 @@
               <div id="customerList" class="customer-list"></div>
               <div id="customerDetail" class="customer-detail"></div>
             </div>
+          </div>
+        </section>
+        <section class="admin-workspace admin-section" id="rideArchive" hidden>
+          <div class="queue-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="overline">Bookings database</p>
+                <h2>Ride Archive</h2>
+              </div>
+              <div class="button-row compact-button-row">
+                <button id="addRideArchiveButton" class="button primary small" type="button">Add Ride</button>
+                <button id="exportRideArchiveButton" class="button ghost small" type="button">Export CSV</button>
+              </div>
+            </div>
+            <section id="manualRidePanel" class="archive-edit-panel" hidden>
+              <div class="panel-heading">
+                <div>
+                  <p class="overline">Manual entry</p>
+                  <h3>Add ride</h3>
+                </div>
+                <button id="cancelManualRideButton" class="button ghost small" type="button">Cancel</button>
+              </div>
+              <form id="manualRideForm" class="booking-form compact-form">
+                <div class="booking-form-section">
+                  <div class="form-section-heading">
+                    <p class="overline">Passenger</p>
+                  </div>
+                  <div class="form-grid two">
+                    <label>
+                      First name
+                      <input name="firstName" required>
+                    </label>
+                    <label>
+                      Last name
+                      <input name="lastName" required>
+                    </label>
+                    <label>
+                      Phone
+                      <input name="phone" autocomplete="tel">
+                    </label>
+                    <label>
+                      Email
+                      <input name="email" type="email" autocomplete="email">
+                    </label>
+                  </div>
+                </div>
+                <div class="booking-form-section">
+                  <div class="form-section-heading">
+                    <p class="overline">Trip</p>
+                  </div>
+                  <div class="form-grid two">
+                    <label>
+                      Appointment date
+                      <input name="pickupDate" type="date" required>
+                    </label>
+                    <label>
+                      Appointment time
+                      <input name="appointmentTime" type="time">
+                    </label>
+                    <label>
+                      Pickup time
+                      <input name="pickupTime" type="time">
+                    </label>
+                    <label>
+                      Service type
+                      <select name="serviceType">
+                        <option value="ambulatory">Ambulatory</option>
+                        <option value="wheelchair">Wheelchair</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    Pickup address
+                    <input name="pickupAddress" required>
+                  </label>
+                  <label>
+                    Drop-off address
+                    <input name="dropoffAddress" required>
+                  </label>
+                  <fieldset class="check-grid">
+                    <legend>Trip support</legend>
+                    <label><input type="checkbox" name="wheelchair"> Wheelchair needed</label>
+                    <label><input type="checkbox" name="returnTrip"> Round trip</label>
+                  </fieldset>
+                  <label>
+                    Notes
+                    <textarea name="notes" rows="3"></textarea>
+                  </label>
+                </div>
+                <div class="booking-form-section">
+                  <div class="form-section-heading">
+                    <p class="overline">Archive metadata</p>
+                  </div>
+                  <div class="form-grid two">
+                    <label>
+                      Ride status
+                      <select name="rideStatus">
+                        <option value="requested">Requested</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="completed">Completed</option>
+                        <option value="canceled">Canceled</option>
+                        <option value="no_show">No-show</option>
+                      </select>
+                    </label>
+                    <label>
+                      Ride type
+                      <input name="rideType" placeholder="Phone booking, facility request">
+                    </label>
+                    <label>
+                      Record state
+                      <select name="recordState">
+                        <option value="active">Active</option>
+                        <option value="archived">Archived</option>
+                        <option value="deleted">Deleted</option>
+                      </select>
+                    </label>
+                    <label>
+                      Quoted price
+                      <input name="quotedPrice" inputmode="decimal">
+                    </label>
+                    <label>
+                      Final price
+                      <input name="finalPrice" inputmode="decimal">
+                    </label>
+                    <label>
+                      Payment status
+                      <select name="paymentStatus">
+                        <option value="">Not set</option>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="paid">Paid</option>
+                        <option value="pending">Pending</option>
+                        <option value="invoiced">Invoiced</option>
+                      </select>
+                    </label>
+                    <label>
+                      Payment method
+                      <input name="paymentMethod">
+                    </label>
+                    <label>
+                      Facility name
+                      <input name="facilityName">
+                    </label>
+                    <label>
+                      Facility contact person
+                      <input name="facilityContactPerson">
+                    </label>
+                    <label>
+                      Facility phone
+                      <input name="facilityPhone" autocomplete="tel">
+                    </label>
+                    <label>
+                      Facility email
+                      <input name="facilityEmail" type="email">
+                    </label>
+                    <label>
+                      Referral source
+                      <input name="referralSource">
+                    </label>
+                    <label>
+                      Assigned driver
+                      <input name="assignedDriver">
+                    </label>
+                    <label>
+                      Wait time
+                      <input name="waitTime">
+                    </label>
+                  </div>
+                  <label>
+                    Internal notes
+                    <textarea name="internalNotes" rows="4"></textarea>
+                  </label>
+                </div>
+                <div class="form-footer">
+                  <button class="button primary" type="submit">Save Manual Ride</button>
+                  <p id="manualRideMessage" class="form-message" role="status"></p>
+                </div>
+              </form>
+            </section>
+            <div class="archive-controls" aria-label="Ride archive filters">
+              <label>
+                Search
+                <input id="rideArchiveSearch" type="search" placeholder="Passenger, phone, address, facility">
+              </label>
+              <label>
+                Date
+                <input id="rideArchiveDateFilter" type="date">
+              </label>
+              <label>
+                Status
+                <select id="rideArchiveStatusFilter">
+                  <option value="">All statuses</option>
+                </select>
+              </label>
+              <label>
+                Payment
+                <select id="rideArchivePaymentFilter">
+                  <option value="">All payments</option>
+                </select>
+              </label>
+              <label>
+                Ride type
+                <select id="rideArchiveTypeFilter">
+                  <option value="">All ride types</option>
+                </select>
+              </label>
+              <label>
+                Facility
+                <select id="rideArchiveFacilityFilter">
+                  <option value="">All facilities</option>
+                </select>
+              </label>
+              <label>
+                City
+                <select id="rideArchiveCityFilter">
+                  <option value="">All cities</option>
+                </select>
+              </label>
+              <label class="inline-check">
+                <input id="rideArchiveShowDeleted" type="checkbox">
+                Show deleted
+              </label>
+            </div>
+            <div id="rideArchiveSummary" class="booking-meta"></div>
+            <div class="archive-table-wrap">
+              <table class="archive-table">
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Passenger</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Ride Type</th>
+                    <th>Payment</th>
+                    <th>Facility</th>
+                    <th>City</th>
+                    <th>Pickup</th>
+                    <th>Drop-off</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="rideArchiveTable"></tbody>
+              </table>
+            </div>
+            <section id="rideArchiveEditPanel" class="archive-edit-panel" hidden>
+              <div class="panel-heading">
+                <div>
+                  <p class="overline">Archive metadata</p>
+                  <h3 id="rideArchiveEditTitle">Edit ride</h3>
+                </div>
+                <button id="cancelRideArchiveEditButton" class="button ghost small" type="button">Cancel</button>
+              </div>
+              <form id="rideArchiveEditForm" class="booking-form compact-form">
+                <input type="hidden" name="bookingId">
+                <div class="form-grid two">
+                  <label>
+                    Ride status
+                    <select name="rideStatus">
+                      <option value="">Use booking status</option>
+                      <option value="requested">Requested</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="scheduled">Scheduled</option>
+                      <option value="completed">Completed</option>
+                      <option value="canceled">Canceled</option>
+                      <option value="no_show">No-show</option>
+                    </select>
+                  </label>
+                  <label>
+                    Ride type
+                    <input name="rideType" placeholder="Medical appointment, discharge, recurring">
+                  </label>
+                  <label>
+                    Record state
+                    <select name="recordState">
+                      <option value="active">Active</option>
+                      <option value="archived">Archived</option>
+                      <option value="deleted">Deleted</option>
+                    </select>
+                  </label>
+                  <label>
+                    Quoted price
+                    <input name="quotedPrice" inputmode="decimal" placeholder="125.00">
+                  </label>
+                  <label>
+                    Final price
+                    <input name="finalPrice" inputmode="decimal" placeholder="125.00">
+                  </label>
+                  <label>
+                    Payment status
+                    <select name="paymentStatus">
+                      <option value="">Not set</option>
+                      <option value="unpaid">Unpaid</option>
+                      <option value="paid">Paid</option>
+                      <option value="pending">Pending</option>
+                      <option value="invoiced">Invoiced</option>
+                    </select>
+                  </label>
+                  <label>
+                    Payment method
+                    <input name="paymentMethod" placeholder="Cash, card, invoice">
+                  </label>
+                  <label>
+                    Facility name
+                    <input name="facilityName">
+                  </label>
+                  <label>
+                    Facility contact person
+                    <input name="facilityContactPerson">
+                  </label>
+                  <label>
+                    Facility phone
+                    <input name="facilityPhone" autocomplete="tel">
+                  </label>
+                  <label>
+                    Facility email
+                    <input name="facilityEmail" type="email">
+                  </label>
+                  <label>
+                    Referral source
+                    <input name="referralSource">
+                  </label>
+                  <label>
+                    Assigned driver
+                    <input name="assignedDriver">
+                  </label>
+                  <label>
+                    Wait time
+                    <input name="waitTime" placeholder="15 minutes">
+                  </label>
+                </div>
+                <label>
+                  Internal notes
+                  <textarea name="internalNotes" rows="4" placeholder="Archive-only internal notes"></textarea>
+                </label>
+                <div class="form-footer">
+                  <button class="button primary" type="submit">Save Archive Fields</button>
+                  <p id="rideArchiveEditMessage" class="form-message" role="status"></p>
+                </div>
+              </form>
+              <div class="audit-timeline">
+                <h3>Audit timeline</h3>
+                <div id="rideArchiveAuditTimeline"></div>
+              </div>
+            </section>
+          </div>
+        </section>
+        <section class="admin-workspace admin-section" id="analytics" hidden>
+          <div class="queue-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="overline">Business snapshot</p>
+                <h2>Ride Analytics</h2>
+              </div>
+            </div>
+            <div class="archive-controls analytics-controls" aria-label="Analytics date range">
+              <label>
+                Date range
+                <select id="analyticsPeriod">
+                  <option value="this_month">This month</option>
+                  <option value="last_month">Last month</option>
+                  <option value="last_30_days">Last 30 days</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </label>
+              <label>
+                Start date
+                <input id="analyticsStartDate" type="date" disabled>
+              </label>
+              <label>
+                End date
+                <input id="analyticsEndDate" type="date" disabled>
+              </label>
+              <div class="analytics-refresh-control">
+                <button id="refreshAnalyticsButton" class="button ghost small" type="button">Refresh Analytics</button>
+              </div>
+            </div>
+            <div id="analyticsRange" class="booking-meta"></div>
+            <section id="analyticsMetrics" class="metric-row analytics-metric-row"></section>
+            <section class="analytics-breakdowns" aria-label="Ride analytics breakdowns">
+              <article>
+                <h3>Rides by status</h3>
+                <table class="archive-table compact-analytics-table">
+                  <tbody id="analyticsByStatus"></tbody>
+                </table>
+              </article>
+              <article>
+                <h3>Service type</h3>
+                <table class="archive-table compact-analytics-table">
+                  <tbody id="analyticsByServiceType"></tbody>
+                </table>
+              </article>
+              <article>
+                <h3>Ambulatory vs wheelchair</h3>
+                <table class="archive-table compact-analytics-table">
+                  <tbody id="analyticsByMobility"></tbody>
+                </table>
+              </article>
+              <article>
+                <h3>Top facilities</h3>
+                <table class="archive-table compact-analytics-table">
+                  <tbody id="analyticsTopFacilities"></tbody>
+                </table>
+              </article>
+              <article>
+                <h3>Top referral sources</h3>
+                <table class="archive-table compact-analytics-table">
+                  <tbody id="analyticsTopReferralSources"></tbody>
+                </table>
+              </article>
+              <article>
+                <h3>Top cities/service areas</h3>
+                <table class="archive-table compact-analytics-table">
+                  <tbody id="analyticsTopCities"></tbody>
+                </table>
+              </article>
+            </section>
           </div>
         </section>
       </section>

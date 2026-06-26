@@ -38,6 +38,15 @@ function phoneDigits(value) {
   return String(value || "").replace(/\D/g, "");
 }
 
+function isValidIsoDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""));
+}
+
+function isValidMoneyText(value) {
+  const text = cleanText(value, 40);
+  return !text || /^\$?\d+(\.\d{1,2})?$/.test(text);
+}
+
 function isValidName(value) {
   const text = cleanText(value, 80);
   const letters = text.match(/\p{L}/gu) || [];
@@ -210,6 +219,168 @@ export function validateStatusInput(input = {}) {
     value: {
       status,
       note: cleanText(input.note, 800),
+    },
+  };
+}
+
+export function validateRideArchiveInput(input = {}) {
+  const allowedRideStatuses = new Set([
+    "requested",
+    "confirmed",
+    "scheduled",
+    "completed",
+    "canceled",
+    "no_show",
+  ]);
+  const allowedPaymentStatuses = new Set([
+    "",
+    "unpaid",
+    "paid",
+    "pending",
+    "invoiced",
+  ]);
+  const allowedRecordStates = new Set([
+    "",
+    "active",
+    "archived",
+    "deleted",
+  ]);
+
+  const rideStatus = cleanText(input.rideDetails?.rideStatus ?? input.rideStatus, 40);
+  const recordState = cleanText(input.rideDetails?.recordState ?? input.recordState, 40);
+  const paymentStatus = cleanText(input.payment?.paymentStatus ?? input.paymentStatus, 40);
+  const quotedPrice = cleanText(input.payment?.quotedPrice ?? input.quotedPrice, 40);
+  const finalPrice = cleanText(input.payment?.finalPrice ?? input.finalPrice, 40);
+  const facilityEmail = normalizeEmail(input.facility?.facilityEmail ?? input.facilityEmail);
+
+  if (rideStatus && !allowedRideStatuses.has(rideStatus)) {
+    return {
+      ok: false,
+      error: "Invalid ride archive status.",
+    };
+  }
+
+  if (!allowedPaymentStatuses.has(paymentStatus)) {
+    return {
+      ok: false,
+      error: "Invalid payment status.",
+    };
+  }
+
+  if (!allowedRecordStates.has(recordState)) {
+    return {
+      ok: false,
+      error: "Invalid record state.",
+    };
+  }
+
+  if (!isValidMoneyText(quotedPrice) || !isValidMoneyText(finalPrice)) {
+    return {
+      ok: false,
+      error: "Prices must be plain dollar amounts, such as 125 or 125.00.",
+    };
+  }
+
+  if (facilityEmail && !EMAIL_PATTERN.test(facilityEmail)) {
+    return {
+      ok: false,
+      error: "Enter a valid facility email address.",
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      rideDetails: {
+        rideStatus,
+        rideType: cleanText(input.rideDetails?.rideType ?? input.rideType, 80),
+        recordState,
+      },
+      payment: {
+        quotedPrice,
+        finalPrice,
+        paymentStatus,
+        paymentMethod: cleanText(input.payment?.paymentMethod ?? input.paymentMethod, 80),
+      },
+      facility: {
+        facilityName: cleanText(input.facility?.facilityName ?? input.facilityName, 160),
+        facilityContactPerson: cleanText(
+          input.facility?.facilityContactPerson ?? input.facilityContactPerson,
+          120,
+        ),
+        facilityPhone: normalizePhone(input.facility?.facilityPhone ?? input.facilityPhone),
+        facilityEmail,
+        referralSource: cleanText(input.facility?.referralSource ?? input.referralSource, 160),
+      },
+      operations: {
+        assignedDriver: cleanText(input.operations?.assignedDriver ?? input.assignedDriver, 120),
+        waitTime: cleanText(input.operations?.waitTime ?? input.waitTime, 80),
+        internalNotes: cleanText(input.operations?.internalNotes ?? input.internalNotes, 1200),
+      },
+    },
+  };
+}
+
+export function validateManualRideArchiveInput(input = {}) {
+  const archiveValidation = validateRideArchiveInput(input);
+  if (!archiveValidation.ok) return archiveValidation;
+
+  const passenger = input.passenger || {};
+  const tripInput = input.trip || {};
+  const errors = {};
+
+  const firstName = cleanText(passenger.firstName ?? input.firstName, 80);
+  const lastName = cleanText(passenger.lastName ?? input.lastName, 80);
+  const phone = normalizePhone(passenger.phone ?? input.phone);
+  const email = normalizeEmail(passenger.email ?? input.email);
+  const pickupAddress = cleanText(tripInput.pickupAddress ?? input.pickupAddress, 240);
+  const dropoffAddress = cleanText(tripInput.dropoffAddress ?? input.dropoffAddress, 240);
+  const pickupDate = cleanText(tripInput.pickupDate ?? input.pickupDate, 20);
+  const pickupTime = cleanText(tripInput.pickupTime ?? input.pickupTime, 20);
+  const appointmentTime = cleanText(tripInput.appointmentTime ?? input.appointmentTime, 40);
+  const serviceType = cleanText(tripInput.serviceType ?? input.serviceType, 40);
+
+  if (!required(firstName)) errors.firstName = "Passenger first name is required.";
+  if (!required(lastName)) errors.lastName = "Passenger last name is required.";
+  if (!phone && !email) errors.contact = "Passenger phone or email is required.";
+  if (email && !EMAIL_PATTERN.test(email)) errors.email = "Enter a valid passenger email address.";
+  if (!required(pickupAddress)) errors.pickupAddress = "Pickup address is required.";
+  if (!required(dropoffAddress)) errors.dropoffAddress = "Drop-off address is required.";
+  if (!required(pickupDate)) errors.pickupDate = "Appointment date is required.";
+  if (pickupDate && !isValidIsoDate(pickupDate)) errors.pickupDate = "Appointment date must use YYYY-MM-DD format.";
+  if (serviceType && !SERVICE_TYPES.has(serviceType)) errors.serviceType = "Service type must be ambulatory, wheelchair, or other.";
+
+  if (Object.keys(errors).length) {
+    return {
+      ok: false,
+      error: "Manual ride entry is missing required fields.",
+      errors,
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      passenger: {
+        firstName,
+        lastName,
+        phone,
+        email,
+      },
+      trip: {
+        pickupAddress,
+        dropoffAddress,
+        pickupDate,
+        pickupTime,
+        appointmentTime,
+        serviceType: serviceType || "other",
+        returnTrip: toBoolean(tripInput.returnTrip ?? input.returnTrip),
+        notes: cleanText(tripInput.notes ?? input.notes, 1000),
+      },
+      accessibility: {
+        wheelchair: toBoolean(input.accessibility?.wheelchair ?? input.wheelchair),
+      },
+      archive: archiveValidation.value,
     },
   };
 }

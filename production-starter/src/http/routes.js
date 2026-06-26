@@ -5,6 +5,12 @@ import {
   updateBookingStatus,
 } from "../services/bookings.js";
 import { getCustomerDetail, listCustomers } from "../services/customers.js";
+import {
+  createManualRideArchiveRecord,
+  listRideArchive,
+  updateRideArchiveMetadata,
+} from "../services/ride-archive.js";
+import { getRideAnalytics } from "../services/ride-analytics.js";
 import { loginAdmin, logoutAdmin, requireAdmin } from "../services/admin.js";
 import { readJsonBody } from "./body.js";
 import { json } from "./responses.js";
@@ -95,6 +101,87 @@ export function registerRoutes(router) {
     }
 
     json(response, 200, { success: true, ...detail });
+  });
+
+  router.register("GET", "/api/admin/ride-archive", async (request, response) => {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      json(response, 401, { success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    json(response, 200, {
+      success: true,
+      rides: await listRideArchive({
+        includeDeleted: context.url.searchParams.get("includeDeleted") === "true",
+      }),
+    });
+  });
+
+  router.register("GET", "/api/admin/ride-analytics", async (request, response, context) => {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      json(response, 401, { success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    const search = context.url.searchParams;
+    json(response, 200, {
+      success: true,
+      analytics: await getRideAnalytics({
+        period: search.get("period") || "this_month",
+        startDate: search.get("startDate") || "",
+        endDate: search.get("endDate") || "",
+      }),
+    });
+  });
+
+  router.register("POST", "/api/admin/ride-archive", async (request, response) => {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      json(response, 401, { success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    const body = await readJsonBody(request);
+    const result = await createManualRideArchiveRecord(body, admin);
+    json(response, result.status, result.body);
+  });
+
+  router.register("PATCH", "/api/admin/ride-archive/:id", async (request, response, context) => {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      json(response, 401, { success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    const body = await readJsonBody(request);
+    const result = await updateRideArchiveMetadata(context.params.id, body, admin);
+    json(response, result.status, result.body);
   });
 
   router.register("PATCH", "/api/admin/bookings/:id", async (request, response, context) => {

@@ -246,6 +246,7 @@ export async function updateBookingStatus(id, input, admin) {
   }
 
   const updated = await updateBooking(id, (booking) => {
+    const previousStatus = booking.status;
     const note = validation.value.note
       ? {
           body: validation.value.note,
@@ -254,10 +255,28 @@ export async function updateBookingStatus(id, input, admin) {
         }
       : null;
 
+    const statusAudit =
+      previousStatus === validation.value.status
+        ? []
+        : [
+            {
+              action: "ride_status_changed",
+              oldValue: previousStatus || "",
+              newValue: validation.value.status,
+              actor: admin.email || "Admin",
+              timestamp: new Date().toISOString(),
+            },
+          ];
+    const operations = booking.operations || {};
+
     return {
       ...booking,
       status: validation.value.status,
       adminNotes: note ? [note, ...(booking.adminNotes || [])] : booking.adminNotes || [],
+      operations: {
+        ...operations,
+        auditTrail: [...statusAudit, ...(Array.isArray(operations.auditTrail) ? operations.auditTrail : [])].slice(0, 100),
+      },
       updatedAt: new Date().toISOString(),
     };
   });

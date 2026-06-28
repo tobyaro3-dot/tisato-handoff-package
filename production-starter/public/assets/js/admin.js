@@ -66,7 +66,10 @@ const statusLabels = {
 
 let currentCustomers = [];
 let currentRideArchive = [];
+let currentBookings = [];
+let globalRideRecords = [];
 let visibleRideArchive = [];
+let globalSearchLoaded = false;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -75,6 +78,11 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function selectorEscape(value) {
+  if (window.CSS?.escape) return CSS.escape(value);
+  return String(value).replace(/["\\]/g, "\\$&");
 }
 
 function setLoginMessage(text, type = "") {
@@ -263,13 +271,14 @@ function renderRideArchive() {
   if (!rideArchiveTable) return;
 
   visibleRideArchive = filteredRideArchive();
+  const showingDeleted = Boolean(rideArchiveShowDeleted?.checked);
   rideArchiveSummary.innerHTML = `
     <span>${escapeHtml(visibleRideArchive.length)} visible ride(s)</span>
-    <span>${escapeHtml(currentRideArchive.length)} total archived booking(s)</span>
+    <span>${escapeHtml(currentRideArchive.length)} ${showingDeleted ? "record(s) including deleted" : "archived ride(s)"}</span>
   `;
 
   if (!currentRideArchive.length) {
-    rideArchiveTable.innerHTML = `<tr><td colspan="12">No rides have been archived yet.</td></tr>`;
+    rideArchiveTable.innerHTML = `<tr><td colspan="12">${showingDeleted ? "No ride records found." : "No archived rides yet. Use Add to Archive from Bookings or Add Ride here."}</td></tr>`;
     return;
   }
 
@@ -410,7 +419,7 @@ function openManualRidePanel() {
   manualRideForm.dataset.dirty = "false";
   setManualRideMessage("");
   setFormValue(manualRideForm, "rideStatus", "requested");
-  setFormValue(manualRideForm, "recordState", "active");
+  setFormValue(manualRideForm, "recordState", "archived");
   setFormValue(manualRideForm, "serviceType", "ambulatory");
   manualRidePanel.hidden = false;
   manualRidePanel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -513,7 +522,8 @@ function hasSimilarRide(payload) {
   const dropoff = payload.trip.dropoffAddress;
   const rideTimes = [payload.trip.pickupTime, payload.trip.appointmentTime].filter(Boolean);
 
-  return currentRideArchive.some((ride) => {
+  const records = globalRideRecords.length ? globalRideRecords : currentRideArchive;
+  return records.some((ride) => {
     if (!sameDay(ride.appointmentDate, payload.trip.pickupDate)) return false;
     const samePerson =
       compactComparable(ride.passengerName) === passengerName ||
@@ -688,37 +698,43 @@ function globalSearchText(record) {
     record.id,
     record.customerId,
     record.passengerName,
+    record.customerName,
     record.fullName,
     record.passengerPhone,
     record.phone,
     record.passengerEmail,
     record.email,
+    record.passenger?.firstName,
+    record.passenger?.lastName,
+    record.passenger?.phone,
+    record.passenger?.email,
     record.facilityName,
+    record.facility?.facilityName,
     record.pickupAddress,
     record.dropoffAddress,
+    record.trip?.pickupAddress,
+    record.trip?.dropoffAddress,
   ]
     .map((value) => String(value ?? "").toLowerCase())
     .join(" ");
 }
 
 async function ensureGlobalSearchData() {
-  if (!currentRideArchive.length) {
-    try {
-      const result = await requestJson("/api/admin/ride-archive?includeDeleted=true");
-      currentRideArchive = result.rides || [];
-      updateRideArchiveFilterOptions(currentRideArchive.filter((ride) => ride.recordState !== "deleted"));
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  if (globalSearchLoaded) return;
 
-  if (!currentCustomers.length) {
-    try {
-      const result = await requestJson("/api/admin/customers");
-      currentCustomers = result.customers || [];
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    const [archiveResult, bookingResult, customerResult] = await Promise.all([
+      requestJson("/api/admin/ride-archive?includeDeleted=true"),
+      requestJson("/api/admin/bookings"),
+      requestJson("/api/admin/customers"),
+    ]);
+    globalRideRecords = archiveResult.rides || [];
+    currentBookings = bookingResult.bookings || [];
+    currentCustomers = customerResult.customers || [];
+    globalSearchLoaded = true;
+  } catch (error) {
+    console.error(error);
+    setDashboardMessage("Admin search could not load every record. Try refreshing.", "error");
   }
 }
 
@@ -731,15 +747,29 @@ function renderGlobalSearchResults(query) {
     return;
   }
 
-  const rideResults = currentRideArchive
+  const rideResults = globalRideRecords
     .filter((ride) => globalSearchText(ride).includes(normalized))
     .slice(0, 6)
     .map((ride) => ({
-      type: "ride",
+      type: ride.recordState === "archived" || ride.recordState === "deleted" ? "ride" : "booking",
       id: ride.id,
       title: `${ride.id} - ${ride.passengerName}`,
-      detail: `${ride.appointmentDate || "No date"} | ${ride.pickupAddress || "No pickup"}`,
+      detail: `${ride.recordState || "active"} | ${ride.appointmentDate || "No date"} | ${ride.pickupAddress || "No pickup"}`,
     }));
+  const bookingResults = currentBookings
+    .filter((booking) => !globalRideRecords.some((ride) => ride.id === booking.id))
+    .filter((booking) => globalSearchText(booking).includes(normalized))
+    .slice(0, 4)
+    .map((booking) => {
+      const passenger = booking.passenger || {};
+      const trip = booking.trip || {};
+      return {
+        type: "booking",
+        id: booking.id,
+        title: `${booking.id} - ${`${passenger.firstName || ""} ${passenger.lastName || ""}`.trim() || "Unknown Passenger"}`,
+        detail: `${trip.pickupDate || "No date"} | ${trip.pickupAddress || "No pickup"}`,
+      };
+    });
   const customerResults = currentCustomers
     .filter((customer) => globalSearchText(customer).includes(normalized))
     .slice(0, 4)
@@ -749,7 +779,7 @@ function renderGlobalSearchResults(query) {
       title: customer.fullName || "Unknown Customer",
       detail: `${customer.phone || "No phone"} | ${customer.email || "No email"}`,
     }));
-  const results = [...rideResults, ...customerResults].slice(0, 10);
+  const results = [...rideResults, ...bookingResults, ...customerResults].slice(0, 10);
 
   adminGlobalSearchResults.hidden = false;
   adminGlobalSearchResults.innerHTML = results.length
@@ -793,10 +823,13 @@ function renderBookings(bookings) {
       const trip = booking.trip || {};
       const passengerName = `${passenger.firstName || "Unknown"} ${passenger.lastName || "Passenger"}`;
       const status = statuses.includes(booking.status) ? booking.status : "new_request";
+      const recordState = booking.rideDetails?.recordState || "active";
+      const archived = recordState === "archived";
       return `
         <article class="booking-row" data-booking-id="${escapeHtml(booking.id)}">
           <div>
             <span class="status-pill">${escapeHtml(statusLabel(status))}</span>
+            ${archived ? `<span class="status-pill">Archived</span>` : ""}
             <h3>${escapeHtml(passengerName)}</h3>
             <div class="booking-meta">
               <span>${escapeHtml(booking.id)}</span>
@@ -804,6 +837,7 @@ function renderBookings(bookings) {
               <span>${escapeHtml(passenger.phone)}</span>
               <span>${escapeHtml(trip.pickupDate)} ${escapeHtml(trip.pickupTime)}</span>
               <span>${escapeHtml(trip.serviceType)}</span>
+              <span>Record: ${escapeHtml(recordState)}</span>
               <span>Last updated: ${escapeHtml(formatTimestamp(booking.updatedAt))}</span>
             </div>
             <p><strong>Pickup:</strong> ${escapeHtml(trip.pickupAddress || "Not provided")}</p>
@@ -820,6 +854,8 @@ function renderBookings(bookings) {
               <textarea data-note rows="3" placeholder="Optional internal note"></textarea>
             </label>
             <button class="button primary" type="button" data-update>Update Booking</button>
+            <button class="button ghost" type="button" data-add-archive ${archived ? "disabled" : ""}>${archived ? "In Archive" : "Add to Archive"}</button>
+            <button class="button ghost" type="button" data-delete-booking>Delete Booking</button>
           </div>
         </article>`;
     })
@@ -934,10 +970,18 @@ async function loadRideArchive() {
 
   rideArchiveTable.innerHTML = `<tr><td colspan="12">Loading ride archive...</td></tr>`;
   const query = rideArchiveShowDeleted?.checked ? "?includeDeleted=true" : "";
-  const result = await requestJson(`/api/admin/ride-archive${query}`);
-  currentRideArchive = result.rides || [];
-  updateRideArchiveFilterOptions(currentRideArchive);
-  renderRideArchive();
+  try {
+    const result = await requestJson(`/api/admin/ride-archive${query}`);
+    currentRideArchive = result.rides || [];
+    updateRideArchiveFilterOptions(currentRideArchive);
+    renderRideArchive();
+  } catch (error) {
+    currentRideArchive = [];
+    visibleRideArchive = [];
+    rideArchiveSummary.innerHTML = "<span>Ride archive could not be loaded.</span>";
+    rideArchiveTable.innerHTML = `<tr><td colspan="12">Ride archive could not be loaded: ${escapeHtml(error.message)}</td></tr>`;
+    throw error;
+  }
 }
 
 async function loadAnalytics() {
@@ -952,8 +996,10 @@ async function loadAnalytics() {
 async function loadBookings() {
   setDashboardMessage("Loading bookings...");
   const result = await requestJson("/api/admin/bookings");
-  renderMetrics(result.bookings);
-  renderBookings(result.bookings);
+  currentBookings = result.bookings || [];
+  globalSearchLoaded = false;
+  renderMetrics(currentBookings);
+  renderBookings(currentBookings);
   try {
     await loadCustomers();
   } catch (error) {
@@ -961,7 +1007,37 @@ async function loadBookings() {
     customerDetail.innerHTML = "<p>Customer history could not be loaded.</p>";
     console.error(error);
   }
-  setDashboardMessage(`Loaded ${result.bookings.length} booking request(s).`, "success");
+  setDashboardMessage(`Loaded ${currentBookings.length} booking request(s).`, "success");
+}
+
+async function setBookingRecordState(bookingId, recordState, message) {
+  await requestJson(`/api/admin/ride-archive/${encodeURIComponent(bookingId)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ rideDetails: { recordState } }),
+  });
+  globalSearchLoaded = false;
+  globalRideRecords = [];
+  await loadBookings();
+  if (document.getElementById("rideArchive")?.hidden === false) {
+    await loadRideArchive();
+  }
+  setDashboardMessage(message, "success");
+}
+
+function focusBookingRow(bookingId) {
+  const row = document.querySelector(`[data-booking-id="${selectorEscape(bookingId)}"]`);
+  if (!row) return false;
+  row.scrollIntoView({ behavior: "smooth", block: "center" });
+  row.classList.add("highlight-row");
+  window.setTimeout(() => row.classList.remove("highlight-row"), 1800);
+  return true;
+}
+
+async function focusRideArchiveRow(rideId, includeDeleted = false) {
+  showAdminSection("rideArchive");
+  if (rideArchiveShowDeleted && includeDeleted) rideArchiveShowDeleted.checked = true;
+  rideArchiveSearch.value = rideId;
+  await loadRideArchive();
 }
 
 async function boot() {
@@ -1099,9 +1175,7 @@ manualRideForm?.addEventListener("submit", async (event) => {
 
   try {
     const payload = manualRideFormPayload(manualRideForm);
-    if (!currentRideArchive.length) {
-      await loadRideArchive();
-    }
+    await ensureGlobalSearchData();
     if (hasSimilarRide(payload) && !confirm("A similar ride may already exist. Continue anyway?")) {
       setManualRideMessage("Manual ride was not saved.", "error");
       return;
@@ -1110,6 +1184,8 @@ manualRideForm?.addEventListener("submit", async (event) => {
       method: "POST",
       body: JSON.stringify(payload),
     });
+    globalSearchLoaded = false;
+    globalRideRecords = [];
     await loadRideArchive();
     forceCloseManualRidePanel();
     setDashboardMessage(`Manual ride ${result.ride?.id || ""} saved.`, "success");
@@ -1157,10 +1233,17 @@ adminGlobalSearchResults?.addEventListener("click", async (event) => {
   adminGlobalSearchResults.hidden = true;
 
   if (type === "ride") {
-    showAdminSection("rideArchive");
-    rideArchiveSearch.value = id;
-    await loadRideArchive();
-    renderRideArchive();
+    const ride = globalRideRecords.find((item) => item.id === id);
+    await focusRideArchiveRow(id, ride?.recordState === "deleted");
+    return;
+  }
+
+  if (type === "booking") {
+    showAdminSection("queue");
+    await loadBookings();
+    if (!focusBookingRow(id)) {
+      setDashboardMessage(`Booking ${id} is not visible in the current booking queue.`, "error");
+    }
     return;
   }
 
@@ -1182,6 +1265,41 @@ adminGlobalSearchResults?.addEventListener("click", async (event) => {
 });
 
 bookingTable.addEventListener("click", async (event) => {
+  const archiveButton = event.target.closest("[data-add-archive]");
+  if (archiveButton) {
+    const row = archiveButton.closest("[data-booking-id]");
+    const bookingId = row.dataset.bookingId;
+
+    archiveButton.disabled = true;
+    setDashboardMessage(`Adding ${bookingId} to Ride Archive...`);
+
+    try {
+      await setBookingRecordState(bookingId, "archived", `Booking ${bookingId} added to Ride Archive.`);
+    } catch (error) {
+      setDashboardMessage(error.message, "error");
+      archiveButton.disabled = false;
+    }
+    return;
+  }
+
+  const deleteButton = event.target.closest("[data-delete-booking]");
+  if (deleteButton) {
+    const row = deleteButton.closest("[data-booking-id]");
+    const bookingId = row.dataset.bookingId;
+    if (!confirm(`Delete booking ${bookingId}? This will hide it without permanently removing the record.`)) return;
+
+    deleteButton.disabled = true;
+    setDashboardMessage(`Deleting ${bookingId}...`);
+
+    try {
+      await setBookingRecordState(bookingId, "deleted", `Booking ${bookingId} was deleted and hidden.`);
+    } catch (error) {
+      setDashboardMessage(error.message, "error");
+      deleteButton.disabled = false;
+    }
+    return;
+  }
+
   const button = event.target.closest("[data-update]");
   if (!button) return;
 

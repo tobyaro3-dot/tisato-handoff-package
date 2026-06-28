@@ -197,7 +197,10 @@ export async function listRideArchive(options = {}) {
   const includeDeleted = Boolean(options.includeDeleted);
   return (await listBookings())
     .map(normalizeRideArchiveRecord)
-    .filter((ride) => includeDeleted || ride.recordState !== "deleted");
+    .filter((ride) => {
+      if (includeDeleted) return true;
+      return ride.recordState === "archived";
+    });
 }
 
 export async function updateRideArchiveMetadata(id, input, admin) {
@@ -319,7 +322,7 @@ export async function createManualRideArchiveRecord(input, admin) {
 
   booking.rideDetails = {
     ...booking.rideDetails,
-    recordState: booking.rideDetails.recordState || "active",
+    recordState: booking.rideDetails.recordState || "archived",
   };
   booking.operations = {
     ...booking.operations,

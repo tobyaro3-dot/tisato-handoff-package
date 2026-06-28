@@ -62,7 +62,11 @@ export function registerRoutes(router) {
       return;
     }
 
-    json(response, 200, { success: true, bookings: await listBookings() });
+    const bookings = (await listBookings()).filter((booking) => {
+      const recordState = String(booking.rideDetails?.recordState || "").trim();
+      return recordState !== "deleted";
+    });
+    json(response, 200, { success: true, bookings });
   });
 
   router.register("GET", "/api/admin/customers", async (request, response) => {
@@ -103,7 +107,7 @@ export function registerRoutes(router) {
     json(response, 200, { success: true, ...detail });
   });
 
-  router.register("GET", "/api/admin/ride-archive", async (request, response) => {
+  router.register("GET", "/api/admin/ride-archive", async (request, response, context) => {
     const admin = await requireAdmin(request);
     if (!admin) {
       json(response, 401, { success: false, error: "Unauthorized" });

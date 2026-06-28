@@ -44,7 +44,7 @@ try {
       rideDetails: {
         rideStatus: "requested",
         rideType: "Phone booking",
-        recordState: "active",
+        recordState: "archived",
       },
       payment: {
         quotedPrice: "100.00",
@@ -78,7 +78,7 @@ try {
       rideDetails: {
         rideStatus: "completed",
         rideType: "Phone booking",
-        recordState: "active",
+        recordState: "archived",
       },
       payment: {
         quotedPrice: "100.00",
@@ -109,7 +109,7 @@ try {
   assert(activeOnly.length === 0, "Deleted rides should be hidden by default.");
   const includingDeleted = await listRideArchive({ includeDeleted: true });
   assert(includingDeleted.length === 1, "Deleted rides should be visible when requested.");
-  await updateRideArchiveMetadata(rideId, { rideDetails: { recordState: "active" } }, admin);
+  await updateRideArchiveMetadata(rideId, { rideDetails: { recordState: "archived" } }, admin);
 
   const analytics = await getRideAnalytics({
     period: "custom",

@@ -3360,6 +3360,29 @@ dd {
   .side-nav-rail.is-visible {
     display: none;
   }
+
+  .hero-video-shell {
+    animation: none;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .hero-video-shell::after {
+    display: none;
+  }
+
+  .hero-video {
+    background: transparent;
+    display: block;
+    height: auto;
+    mix-blend-mode: normal;
+    object-fit: contain;
+    width: 100%;
+  }
 }
 
 @media (max-width: 760px) {

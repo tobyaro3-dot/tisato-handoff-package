@@ -781,6 +781,7 @@ main > section {
   inset: 10px;
   pointer-events: none;
   position: absolute;
+  z-index: 2;
 }
 
 .hero-video {
@@ -792,17 +793,27 @@ main > section {
   object-position: 56% 48%;
   position: relative;
   pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
   width: 100%;
   z-index: 1;
+}
+
+.hero-video[controls] {
+  pointer-events: none;
 }
 
 .hero-video::-webkit-media-controls,
 .hero-video::-webkit-media-controls-panel,
 .hero-video::-webkit-media-controls-play-button,
-.hero-video::-webkit-media-controls-start-playback-button {
+.hero-video::-webkit-media-controls-start-playback-button,
+.hero-video::-webkit-media-controls-overlay-play-button,
+.hero-video::-webkit-media-controls-enclosure {
   -webkit-appearance: none;
   display: none !important;
   opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .media-note {
@@ -3615,7 +3626,7 @@ dd {
 
   .hero-video {
     object-position: 55% 40%;
-    transform: translate(0, -4%) scale(1.08);
+    transform: translate(0, -4%);
   }
 
   .media-note {

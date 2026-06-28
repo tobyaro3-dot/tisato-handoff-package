@@ -90,6 +90,7 @@ updateNavState();
 window.addEventListener("scroll", requestNavUpdate, { passive: true });
 
 if (heroVideo) {
+  let autoplayRetried = false;
   heroVideo.muted = true;
   heroVideo.defaultMuted = true;
   heroVideo.loop = true;
@@ -97,9 +98,13 @@ if (heroVideo) {
   heroVideo.playsInline = true;
   heroVideo.controls = false;
   heroVideo.removeAttribute("controls");
+  heroVideo.removeAttribute("poster");
   heroVideo.setAttribute("playsinline", "");
   heroVideo.setAttribute("webkit-playsinline", "");
   heroVideo.setAttribute("preload", "auto");
+  heroVideo.setAttribute("muted", "");
+  heroVideo.setAttribute("autoplay", "");
+  heroVideo.setAttribute("loop", "");
   heroVideo.setAttribute("disablepictureinpicture", "");
   heroVideo.setAttribute("disableremoteplayback", "");
   heroVideo.setAttribute("controlslist", "nodownload noplaybackrate nofullscreen");
@@ -111,10 +116,20 @@ if (heroVideo) {
       return;
     }
 
+    heroVideo.controls = false;
+    heroVideo.removeAttribute("controls");
+    heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
     const playRequest = heroVideo.play();
     if (playRequest?.catch) {
       playRequest.catch(() => undefined);
     }
+  };
+
+  const retryHeroVideo = () => {
+    if (autoplayRetried || prefersReducedMotion.matches) return;
+    autoplayRetried = true;
+    playHeroVideo();
   };
 
   if (heroVideo.readyState > 1) {
@@ -123,6 +138,10 @@ if (heroVideo) {
     heroVideo.addEventListener("canplay", playHeroVideo, { once: true });
   }
 
+  window.addEventListener("load", playHeroVideo, { once: true });
+  document.addEventListener("touchstart", retryHeroVideo, { once: true, passive: true });
+  document.addEventListener("pointerdown", retryHeroVideo, { once: true, passive: true });
+  document.addEventListener("click", retryHeroVideo, { once: true });
   prefersReducedMotion.addEventListener("change", playHeroVideo);
 }
 

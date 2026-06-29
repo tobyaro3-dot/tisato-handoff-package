@@ -3847,12 +3847,18 @@ dd {
   .trust-cards article {
     align-content: start;
     border-left: 0;
-    border-radius: 18px;
-    gap: 8px;
+    border-radius: 20px;
+    gap: 14px;
     justify-items: center;
-    min-height: 188px;
-    padding: 16px 10px 14px;
+    min-height: 0;
+    padding: 16px 12px;
     text-align: center;
+  }
+
+  .trust-cards article:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(100%, calc((100% - 16px) / 2));
   }
 
   .trust-cards article::after {
@@ -3860,38 +3866,30 @@ dd {
   }
 
   .badge-icon {
-    height: 48px;
-    margin-bottom: 2px;
-    width: 48px;
+    height: 42px;
+    width: 42px;
   }
 
   .badge-icon svg {
-    height: 27px;
-    width: 27px;
+    height: 23px;
+    width: 23px;
   }
 
   .trust-cards strong {
-    display: -webkit-box;
-    font-size: clamp(1.08rem, 4.7vw, 1.22rem);
-    line-height: 1.08;
-    max-width: 11ch;
-    min-height: 2.16em;
-    overflow: hidden;
+    display: block;
+    font-size: clamp(0.94rem, 4.1vw, 1rem);
+    line-height: 1.35;
+    max-width: 14ch;
     text-align: center;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
   }
 
   .trust-cards p {
-    display: -webkit-box;
-    font-size: clamp(0.88rem, 3.7vw, 0.94rem);
-    line-height: 1.28;
-    max-width: 17ch;
-    overflow: hidden;
+    display: block;
+    font-size: clamp(0.81rem, 3.45vw, 0.88rem);
+    line-height: 1.42;
+    max-width: 18ch;
     overflow-wrap: anywhere;
     text-align: center;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
   }
 
   .testimonial-grid article {
@@ -4008,5 +4006,21 @@ dd {
 
   .admin-side-nav nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .trust-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-cards article:last-child:nth-child(odd) {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  .trust-cards strong,
+  .trust-cards p {
+    max-width: 26ch;
   }
 }

@@ -1,6 +1,7 @@
 const faqItems = document.querySelectorAll(".faq-item");
 const siteHeader = document.querySelector(".site-header");
 const navToggle = document.querySelector(".nav-toggle");
+const mobileDrawerClose = document.querySelector(".mobile-drawer-close");
 const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
 const sideNavRail = document.querySelector(".side-nav-rail");
 const sideNavLinks = Array.from(document.querySelectorAll(".side-nav-rail a"));
@@ -151,9 +152,15 @@ if (navToggle) {
   });
 }
 
+if (mobileDrawerClose) {
+  mobileDrawerClose.addEventListener("click", () => {
+    setMobileNavOpen(false);
+  });
+}
+
 document.addEventListener("pointerdown", (event) => {
   if (!siteHeader?.classList.contains("nav-open")) return;
-  if (!window.matchMedia("(max-width: 760px)").matches) return;
+  if (!window.matchMedia("(max-width: 768px)").matches) return;
 
   const clickedInsideDrawer = event.target.closest(".site-nav");
   const clickedToggle = event.target.closest(".nav-toggle");
@@ -170,7 +177,7 @@ document.addEventListener("keydown", (event) => {
 
 navLinks.forEach((link) => {
   link.addEventListener("click", () => {
-    if (window.matchMedia("(max-width: 760px)").matches) {
+    if (window.matchMedia("(max-width: 768px)").matches) {
       setMobileNavOpen(false);
     }
   });
@@ -259,7 +266,7 @@ if ("IntersectionObserver" in window) {
 }
 
 window.addEventListener("resize", () => {
-  if (!window.matchMedia("(max-width: 760px)").matches) {
+  if (!window.matchMedia("(max-width: 768px)").matches) {
     setMobileNavOpen(false);
   }
 

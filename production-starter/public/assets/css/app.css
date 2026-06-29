@@ -4027,6 +4027,11 @@ dd {
 
 @media (max-width: 768px) {
   body:not(.admin-reference-body) {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  body:not(.admin-reference-body) > main {
     padding-top: clamp(82px, 22vw, 104px);
   }
 

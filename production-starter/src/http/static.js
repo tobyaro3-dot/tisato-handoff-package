@@ -54,10 +54,59 @@ export async function serveStatic(request, response) {
   const url = new URL(request.url, config.publicOrigin);
   const filePath = await findStaticFile(url.pathname);
   if (!filePath) return false;
+  const stat = await fs.stat(filePath);
+  const contentType = MIME_TYPES[extname(filePath)] || "application/octet-stream";
+  const baseHeaders = {
+    "Content-Type": contentType,
+    "Cache-Control": "public, max-age=300",
+    "Accept-Ranges": "bytes",
+  };
+  const range = request.headers.range;
+
+  if (range) {
+    const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+    if (!match) {
+      response.writeHead(416, {
+        ...baseHeaders,
+        "Content-Range": `bytes */${stat.size}`,
+      });
+      response.end();
+      return true;
+    }
+
+    const requestedStart = match[1] === "" ? null : Number(match[1]);
+    const requestedEnd = match[2] === "" ? null : Number(match[2]);
+    const suffixLength = requestedStart === null ? requestedEnd : null;
+    const start = suffixLength === null ? requestedStart : Math.max(stat.size - suffixLength, 0);
+    const end = requestedEnd === null || requestedStart === null ? stat.size - 1 : requestedEnd;
+
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end >= stat.size || start > end) {
+      response.writeHead(416, {
+        ...baseHeaders,
+        "Content-Range": `bytes */${stat.size}`,
+      });
+      response.end();
+      return true;
+    }
+
+    response.writeHead(206, {
+      ...baseHeaders,
+      "Content-Length": end - start + 1,
+      "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+    });
+
+    if (request.method === "HEAD") {
+      response.end();
+      return true;
+    }
+
+    createReadStream(filePath, { start, end }).pipe(response);
+    return true;
+  }
 
   response.writeHead(200, {
-    "Content-Type": MIME_TYPES[extname(filePath)] || "application/octet-stream",
-    "Cache-Control": "public, max-age=300",
+    ...baseHeaders,
+    "Content-Length": stat.size,
   });
 
   if (request.method === "HEAD") {

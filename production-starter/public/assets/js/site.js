@@ -28,6 +28,8 @@ const setMobileNavOpen = (isOpen) => {
   siteHeader.classList.toggle("nav-open", isOpen);
   document.body.classList.toggle("mobile-nav-open", isOpen);
   document.body.classList.remove("mobile-nav-lock");
+  sideNavRail?.classList.toggle("is-open", isOpen);
+  sideNavRail?.setAttribute("aria-hidden", String(!isOpen && mobileNavQuery.matches));
   navToggle.setAttribute("aria-expanded", String(isOpen));
   navToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 };
@@ -94,6 +96,9 @@ const requestNavUpdate = () => {
 };
 
 updateNavState();
+if (sideNavRail && mobileNavQuery.matches) {
+  sideNavRail.setAttribute("aria-hidden", "true");
+}
 window.addEventListener("scroll", requestNavUpdate, { passive: true });
 
 if (heroVideo) {

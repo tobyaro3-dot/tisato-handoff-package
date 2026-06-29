@@ -4086,6 +4086,7 @@ dd {
     z-index: 220;
   }
 
+  .side-nav-rail.is-open,
   body.mobile-nav-open .side-nav-rail,
   body.mobile-nav-open .side-nav-rail.is-visible {
     opacity: 1;

@@ -7,6 +7,7 @@ const sideNavRail = document.querySelector(".side-nav-rail");
 const sideNavLinks = Array.from(document.querySelectorAll(".side-nav-rail a"));
 const heroVideo = document.querySelector(".hero-video");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const mobileNavQuery = window.matchMedia("(max-width: 768px)");
 const scrollNavThreshold = 120;
 
 const getLinkSectionId = (link) => {
@@ -25,7 +26,8 @@ let navTicking = false;
 const setMobileNavOpen = (isOpen) => {
   if (!siteHeader || !navToggle) return;
   siteHeader.classList.toggle("nav-open", isOpen);
-  document.body.classList.toggle("mobile-nav-lock", isOpen);
+  document.body.classList.toggle("mobile-nav-open", isOpen);
+  document.body.classList.remove("mobile-nav-lock");
   navToggle.setAttribute("aria-expanded", String(isOpen));
   navToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 };
@@ -82,6 +84,10 @@ const updateNavState = () => {
 };
 
 const requestNavUpdate = () => {
+  if (document.body.classList.contains("mobile-nav-open") && mobileNavQuery.matches) {
+    setMobileNavOpen(false);
+  }
+
   if (navTicking) return;
   navTicking = true;
   requestAnimationFrame(updateNavState);
@@ -159,12 +165,12 @@ if (mobileDrawerClose) {
 }
 
 document.addEventListener("pointerdown", (event) => {
-  if (!siteHeader?.classList.contains("nav-open")) return;
-  if (!window.matchMedia("(max-width: 768px)").matches) return;
+  if (!document.body.classList.contains("mobile-nav-open")) return;
+  if (!mobileNavQuery.matches) return;
 
-  const clickedInsideDrawer = event.target.closest(".site-nav");
+  const clickedInsideRail = event.target.closest(".side-nav-rail");
   const clickedToggle = event.target.closest(".nav-toggle");
-  if (clickedInsideDrawer || clickedToggle) return;
+  if (clickedInsideRail || clickedToggle) return;
 
   setMobileNavOpen(false);
 });
@@ -177,7 +183,7 @@ document.addEventListener("keydown", (event) => {
 
 navLinks.forEach((link) => {
   link.addEventListener("click", () => {
-    if (window.matchMedia("(max-width: 768px)").matches) {
+    if (mobileNavQuery.matches) {
       setMobileNavOpen(false);
     }
   });
@@ -185,6 +191,10 @@ navLinks.forEach((link) => {
 
 sideNavLinks.forEach((link) => {
   link.addEventListener("click", (event) => {
+    if (mobileNavQuery.matches) {
+      setMobileNavOpen(false);
+    }
+
     const sectionId = getLinkSectionId(link);
     if (!sectionId) return;
 

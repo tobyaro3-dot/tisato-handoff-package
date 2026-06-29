@@ -154,7 +154,7 @@ export async function createBooking(request, input) {
       status: 429,
       body: {
         success: false,
-        error: "Too many booking attempts. Please call dispatch directly.",
+        error: "Too many booking attempts. Please call our team directly.",
       },
     };
   }

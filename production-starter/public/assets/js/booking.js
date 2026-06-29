@@ -294,6 +294,6 @@ form.addEventListener("submit", async (event) => {
     window.location.href = `/thank-you?bookingId=${encodeURIComponent(result.bookingId)}`;
   } catch (error) {
     console.error(error);
-    setMessage("The request could not be submitted. Please call dispatch directly.", "error");
+    setMessage("The request could not be submitted. Please call our team directly.", "error");
   }
 });

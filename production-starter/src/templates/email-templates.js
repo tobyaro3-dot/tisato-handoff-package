@@ -54,7 +54,7 @@ export function dispatchBookingTemplate(booking) {
     subject,
     html: layout({
       title: "New Booking Request",
-      preview: `A new booking request is ready for dispatch review: ${booking.id}`,
+      preview: `A new booking request is ready for our team review: ${booking.id}`,
       body: `
         <p><span class="pill">${escapeHtml(booking.status)}</span></p>
         <p>A new transportation request has been submitted and needs admin review.</p>

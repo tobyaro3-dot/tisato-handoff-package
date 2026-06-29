@@ -3402,8 +3402,11 @@ dd {
     border: 0;
     border-radius: 0;
     box-shadow: none;
+    display: grid;
     overflow: visible;
     padding: 0;
+    place-items: center;
+    width: 100%;
   }
 
   .hero-video-shell::after {
@@ -3414,8 +3417,10 @@ dd {
     background: transparent;
     display: block;
     height: auto;
+    filter: none;
     mix-blend-mode: normal;
     object-fit: contain;
+    transform: none;
     width: 95%;
   }
 }
@@ -3817,7 +3822,6 @@ dd {
     text-align: left;
   }
 
-  .trust-cards,
   .contact-grid,
   .service-grid,
   .analytics-breakdowns,
@@ -3834,18 +3838,60 @@ dd {
     grid-column: 1 / -1;
   }
 
+  .trust-cards {
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 16px;
+  }
+
   .trust-cards article {
+    align-content: start;
+    border-left: 0;
+    border-radius: 18px;
+    gap: 8px;
     justify-items: center;
-    min-height: 190px;
-    padding-inline: 18px;
+    min-height: 188px;
+    padding: 16px 10px 14px;
     text-align: center;
   }
 
-  .trust-cards strong,
+  .trust-cards article::after {
+    display: none;
+  }
+
+  .badge-icon {
+    height: 48px;
+    margin-bottom: 2px;
+    width: 48px;
+  }
+
+  .badge-icon svg {
+    height: 27px;
+    width: 27px;
+  }
+
+  .trust-cards strong {
+    display: -webkit-box;
+    font-size: clamp(1.08rem, 4.7vw, 1.22rem);
+    line-height: 1.08;
+    max-width: 11ch;
+    min-height: 2.16em;
+    overflow: hidden;
+    text-align: center;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
   .trust-cards p {
-    max-width: 24ch;
+    display: -webkit-box;
+    font-size: clamp(0.88rem, 3.7vw, 0.94rem);
+    line-height: 1.28;
+    max-width: 17ch;
+    overflow: hidden;
     overflow-wrap: anywhere;
     text-align: center;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 
   .testimonial-grid article {

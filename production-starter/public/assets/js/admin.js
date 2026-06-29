@@ -825,26 +825,56 @@ function renderBookings(bookings) {
       const status = statuses.includes(booking.status) ? booking.status : "new_request";
       const recordState = booking.rideDetails?.recordState || "active";
       const archived = recordState === "archived";
+      const submittedAt = formatTimestamp(booking.createdAt || booking.submittedAt || booking.updatedAt);
+      const rideType = trip.serviceType || booking.rideDetails?.rideType || "Not provided";
       return `
         <article class="booking-row" data-booking-id="${escapeHtml(booking.id)}">
-          <div>
-            <span class="status-pill">${escapeHtml(statusLabel(status))}</span>
-            ${archived ? `<span class="status-pill">Archived</span>` : ""}
-            <h3>${escapeHtml(passengerName)}</h3>
-            <div class="booking-meta">
-              <span>${escapeHtml(booking.id)}</span>
-              ${booking.customerId ? `<span>Customer: ${escapeHtml(booking.customerId)}</span>` : ""}
-              <span>${escapeHtml(passenger.phone)}</span>
-              <span>${escapeHtml(trip.pickupDate)} ${escapeHtml(trip.pickupTime)}</span>
-              <span>${escapeHtml(trip.serviceType)}</span>
-              <span>Record: ${escapeHtml(recordState)}</span>
-              <span>Last updated: ${escapeHtml(formatTimestamp(booking.updatedAt))}</span>
+          <div class="booking-card-details">
+            <div class="booking-card-header">
+              <div class="booking-status-stack">
+                <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(statusLabel(status))}</span>
+                ${archived ? `<span class="status-pill status-archived">Archived</span>` : ""}
+              </div>
+              <div>
+                <h3>${escapeHtml(passengerName)}</h3>
+                <p class="booking-id-line">Booking ID: ${escapeHtml(booking.id)}</p>
+              </div>
             </div>
-            <p><strong>Pickup:</strong> ${escapeHtml(trip.pickupAddress || "Not provided")}</p>
-            <p><strong>Drop-off:</strong> ${escapeHtml(trip.dropoffAddress || "Not provided")}</p>
-            <p>${escapeHtml(trip.notes || "No notes provided.")}</p>
+
+            <div class="booking-meta booking-chip-row" aria-label="Booking summary">
+              <span class="booking-chip"><strong>Phone</strong>${escapeHtml(passenger.phone || "Not provided")}</span>
+              <span class="booking-chip"><strong>Submitted</strong>${escapeHtml(submittedAt)}</span>
+              <span class="booking-chip"><strong>Ride Type</strong>${escapeHtml(rideType)}</span>
+            </div>
+
+            <dl class="booking-trip-details">
+              <div>
+                <dt>Pickup</dt>
+                <dd>${escapeHtml(trip.pickupAddress || "Not provided")}</dd>
+              </div>
+              <div>
+                <dt>Drop-off</dt>
+                <dd>${escapeHtml(trip.dropoffAddress || "Not provided")}</dd>
+              </div>
+              <div>
+                <dt>Notes</dt>
+                <dd>${escapeHtml(trip.notes || "No notes provided.")}</dd>
+              </div>
+            </dl>
+
+            <details class="booking-record-details">
+              <summary>Details</summary>
+              <div>
+                ${booking.customerId ? `<span>Customer ID: ${escapeHtml(booking.customerId)}</span>` : ""}
+                <span>Record: ${escapeHtml(recordState)}</span>
+                <span>Last updated: ${escapeHtml(formatTimestamp(booking.updatedAt))}</span>
+              </div>
+            </details>
           </div>
-          <div class="row-actions">
+          <div class="row-actions booking-action-panel">
+            <div class="booking-action-heading">
+              <span>Manage Request</span>
+            </div>
             <label>
               Status
               <select data-status>${statusOptions(status)}</select>

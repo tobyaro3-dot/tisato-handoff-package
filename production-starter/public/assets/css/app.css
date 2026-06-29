@@ -2898,15 +2898,134 @@ dd {
 
 .booking-row {
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.36fr);
-  padding: 18px;
+  align-items: start;
+  gap: clamp(18px, 3vw, 30px);
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 0.34fr);
+  padding: clamp(18px, 3vw, 26px);
 }
 
 .booking-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 14px;
+}
+
+.booking-card-details {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.booking-card-header {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+}
+
+.booking-status-stack {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.booking-card-header h3 {
+  font-size: clamp(1.28rem, 2vw, 1.62rem);
+  letter-spacing: -0.035em;
+  margin: 0;
+  text-align: left;
+}
+
+.booking-id-line {
+  color: rgba(102, 95, 115, 0.86);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  margin: 5px 0 0;
+  text-align: left;
+}
+
+.booking-chip-row {
+  gap: 10px;
+}
+
+.booking-chip {
+  align-items: start;
+  background: rgba(255, 253, 248, 0.74);
+  border: 1px solid rgba(223, 208, 232, 0.72);
+  border-radius: 14px;
+  color: var(--ink);
+  display: grid;
+  gap: 3px;
+  line-height: 1.25;
+  min-width: min(100%, 150px);
+  padding: 9px 12px;
+}
+
+.booking-chip strong {
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.booking-trip-details {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+.booking-trip-details > div {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 82px minmax(0, 1fr);
+}
+
+.booking-trip-details dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.booking-trip-details dd {
+  color: var(--ink);
+  line-height: 1.45;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.booking-record-details {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.booking-record-details summary {
+  cursor: pointer;
+  font-weight: 900;
+  width: fit-content;
+}
+
+.booking-record-details > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 8px;
+}
+
+.booking-action-panel {
+  background: rgba(255, 253, 248, 0.64);
+  border: 1px solid rgba(223, 208, 232, 0.72);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.booking-action-heading {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .status-pill {
@@ -2919,6 +3038,36 @@ dd {
   margin-bottom: 8px;
   padding: 6px 10px;
   text-transform: uppercase;
+}
+
+.status-new_request {
+  background: #efe6f8;
+  color: var(--purple);
+}
+
+.status-contacted {
+  background: #fff3d8;
+  color: #876017;
+}
+
+.status-scheduled {
+  background: #e9f2ff;
+  color: #2c5f8e;
+}
+
+.status-completed {
+  background: #e7f4ed;
+  color: #2f7b54;
+}
+
+.status-cancelled {
+  background: #f8e7e4;
+  color: #a8403c;
+}
+
+.status-archived {
+  background: #eceaf0;
+  color: #665f73;
 }
 
 .row-actions {

@@ -4026,20 +4026,26 @@ dd {
 }
 
 @media (max-width: 768px) {
+  body:not(.admin-reference-body) {
+    padding-top: clamp(82px, 22vw, 104px);
+  }
+
   .site-header,
   .site-header.is-scrolled,
   .home-page .site-header.is-scrolled {
     filter: none;
+    left: 0;
     opacity: 1;
     pointer-events: auto;
-    position: sticky;
+    position: fixed;
     top: 0;
     transform: none;
-    z-index: 240;
+    width: 100%;
+    z-index: 9999;
   }
 
   .site-header.nav-open {
-    z-index: 500;
+    z-index: 10000;
   }
 
   body.mobile-nav-lock {

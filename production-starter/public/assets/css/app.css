@@ -4026,6 +4026,22 @@ dd {
 }
 
 @media (max-width: 768px) {
+  .site-header,
+  .site-header.is-scrolled,
+  .home-page .site-header.is-scrolled {
+    filter: none;
+    opacity: 1;
+    pointer-events: auto;
+    position: sticky;
+    top: 0;
+    transform: none;
+    z-index: 240;
+  }
+
+  .site-header.nav-open {
+    z-index: 500;
+  }
+
   body.mobile-nav-lock {
     overflow: auto;
     touch-action: auto;

@@ -1852,7 +1852,7 @@ dd {
 }
 
 .service-area-layout {
-  align-items: stretch;
+  align-items: start;
   display: grid;
   gap: clamp(18px, 3vw, 28px);
   grid-template-columns: minmax(260px, 0.35fr) minmax(0, 0.65fr);
@@ -2029,6 +2029,7 @@ dd {
 }
 
 .service-area-map-card {
+  align-self: start;
   overflow: hidden;
   padding: 12px;
 }
@@ -2038,7 +2039,7 @@ dd {
     radial-gradient(circle at 28% 22%, rgba(239, 230, 248, 0.78), transparent 34%),
     linear-gradient(135deg, rgba(255, 250, 240, 0.92), rgba(232, 244, 255, 0.72));
   border-radius: 22px;
-  min-height: clamp(430px, 52vw, 620px);
+  height: clamp(360px, 38vw, 480px);
   overflow: hidden;
   position: relative;
   z-index: 0;
@@ -4361,7 +4362,7 @@ dd {
   }
 
   .service-area-map {
-    min-height: min(112vw, 430px);
+    height: min(92vw, 360px);
   }
 
   .service-area-city {

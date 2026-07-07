@@ -3423,7 +3423,7 @@ dd {
 .booking-trip-details > div {
   display: grid;
   gap: 4px;
-  grid-template-columns: 82px minmax(0, 1fr);
+  grid-template-columns: 108px minmax(0, 1fr);
 }
 
 .booking-trip-details dt {
@@ -3438,6 +3438,13 @@ dd {
   margin: 0;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.booking-muted-detail {
+  color: var(--muted);
+  display: block;
+  font-size: 0.86em;
+  margin-top: 2px;
 }
 
 .booking-record-details {

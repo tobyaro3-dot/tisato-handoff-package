@@ -136,7 +136,31 @@ export function validateBookingInput(input = {}) {
     serviceType: cleanText(input.serviceType, 40),
     appointmentTime: cleanText(input.appointmentTime, 40),
     returnTrip: toBoolean(input.returnTrip),
+    returnTime: cleanText(input.returnTime, 40),
+    returnDetails: cleanText(input.returnDetails, 240),
+    appointmentType: cleanText(input.appointmentType, 120),
+    facilityName: cleanText(input.facilityName, 160),
+    doctorName: cleanText(input.doctorName, 160),
+    clinicName: cleanText(input.clinicName, 160),
+    facilityPhone: normalizePhone(input.facilityPhone),
+    specialInstructions: cleanText(input.specialInstructions, 1000),
+    passengerCount: cleanText(input.passengerCount ?? input.numberOfPassengers, 20),
+    numberOfPassengers: cleanText(input.numberOfPassengers ?? input.passengerCount, 20),
+    companionRidingAlong: toBoolean(input.companionRidingAlong),
+    caregiverRidingAlong: toBoolean(input.caregiverRidingAlong),
     notes: cleanText(input.notes, 1000),
+  };
+
+  const facilityEmail = normalizeEmail(input.facility?.facilityEmail ?? input.facilityEmail);
+  const facility = {
+    facilityName: cleanText(input.facility?.facilityName ?? input.facilityName, 160),
+    facilityContactPerson: cleanText(
+      input.facility?.facilityContactPerson ?? input.facilityContactPerson,
+      160
+    ),
+    facilityPhone: normalizePhone(input.facility?.facilityPhone ?? input.facilityPhone),
+    facilityEmail,
+    referralSource: cleanText(input.facility?.referralSource ?? input.referralSource, 160),
   };
 
   const accessibility = {
@@ -180,6 +204,9 @@ export function validateBookingInput(input = {}) {
   } else if (pickupDateTime !== null && appointmentDateTime <= pickupDateTime) {
     errors.appointmentTime = "Appointment time must be after pickup time.";
   }
+  if (facilityEmail && !EMAIL_PATTERN.test(facilityEmail)) {
+    errors.facilityEmail = "Enter a valid facility email address.";
+  }
 
   return {
     ok: Object.keys(errors).length === 0,
@@ -187,6 +214,7 @@ export function validateBookingInput(input = {}) {
     value: {
       passenger,
       trip,
+      facility,
       accessibility,
       consent: {
         contactPermission: true,

@@ -77,6 +77,7 @@ function normalizeBookingRecord(booking) {
       phone: passenger.phone || booking.phone || "",
     },
     trip: {
+      ...trip,
       pickupDate: trip.pickupDate || booking.pickupDate || booking.date || "",
       pickupTime: trip.pickupTime || booking.pickupTime || booking.time || "",
       pickupAddress: trip.pickupAddress || booking.pickupAddress || booking.pickup || "",

@@ -209,6 +209,12 @@ function facilityDetails(booking = {}) {
   const facility = booking.facility || {};
   return {
     name: firstProvided(facility.facilityName, facility.name, trip.facilityName, booking.facilityName),
+    address: firstProvided(
+      facility.facilityAddress,
+      facility.address,
+      trip.facilityAddress,
+      booking.facilityAddress
+    ),
     contact: firstProvided(
       facility.facilityContactPerson,
       facility.contactPerson,
@@ -229,6 +235,52 @@ function adminNotesSummary(booking = {}) {
       .join(" | ");
   }
   return firstProvided(booking.operations?.internalNotes, booking.internalAdminNotes);
+}
+
+function detailValue(value) {
+  if (value === false) return "No";
+  if (value === true) return "Yes";
+  const normalized = String(value ?? "").trim();
+  if (!normalized || normalized === "Not provided") return "";
+  return normalized;
+}
+
+function phoneHref(value) {
+  const phone = String(value ?? "").replace(/[^\d+]/g, "");
+  return phone ? `tel:${phone}` : "";
+}
+
+function emailHref(value) {
+  const email = String(value ?? "").trim();
+  return email ? `mailto:${email}` : "";
+}
+
+function renderBookingDetailRow(label, value, options = {}) {
+  const displayValue = detailValue(value);
+  if (!displayValue) return "";
+  const content =
+    options.type === "phone"
+      ? `<a href="${escapeHtml(phoneHref(displayValue))}">${escapeHtml(displayValue)}</a>`
+      : options.type === "email"
+        ? `<a href="${escapeHtml(emailHref(displayValue))}">${escapeHtml(displayValue)}</a>`
+        : escapeHtml(displayValue);
+  return `
+    <div class="booking-detail-row">
+      <dt>${escapeHtml(label)}</dt>
+      <dd>${content}</dd>
+    </div>
+  `;
+}
+
+function renderBookingDetailSection(title, rows) {
+  const visibleRows = rows.filter(Boolean).join("");
+  if (!visibleRows) return "";
+  return `
+    <section class="booking-detail-section" aria-label="${escapeHtml(title)}">
+      <h4>${escapeHtml(title)}</h4>
+      <dl>${visibleRows}</dl>
+    </section>
+  `;
 }
 
 function compactComparable(value) {
@@ -891,10 +943,47 @@ function renderBookings(bookings) {
       const rideType = tripTypeLabel(trip, booking);
       const mobility = mobilityLabel(booking);
       const appointmentType = firstProvided(trip.appointmentType, booking.appointmentType);
-      const doctorOrClinic = firstProvided(trip.doctorName, trip.clinicName, booking.doctorName, booking.clinicName);
+      const doctor = firstProvided(trip.doctorName, booking.doctorName);
+      const clinic = firstProvided(trip.clinicName, booking.clinicName);
       const specialInstructions = firstProvided(trip.specialInstructions, booking.specialInstructions);
       const tripNotes = firstProvided(trip.notes, booking.notes);
       const returnDetails = firstProvided(trip.returnTime, booking.returnTime, trip.returnDetails, booking.returnDetails);
+      const returnRide = trip.returnTrip ? returnDetails || "Return trip requested" : "One-way";
+      const pickupAddress = firstProvided(trip.pickupAddress, booking.pickupAddress);
+      const dropoffAddress = firstProvided(trip.dropoffAddress, booking.dropoffAddress);
+      const bookingDetailSections = [
+        renderBookingDetailSection("Passenger", [
+          renderBookingDetailRow("Name", passengerName),
+          renderBookingDetailRow("Phone", passenger.phone, { type: "phone" }),
+          renderBookingDetailRow("Email", passenger.email, { type: "email" }),
+        ]),
+        renderBookingDetailSection("Trip Details", [
+          renderBookingDetailRow("Trip Type", rideType),
+          renderBookingDetailRow("Appointment Type", appointmentType),
+          renderBookingDetailRow("Appointment Date", appointmentDate),
+          renderBookingDetailRow("Appointment Time", appointmentTime),
+          pickupTime && pickupTime !== appointmentTime
+            ? renderBookingDetailRow("Pickup Time", pickupTime)
+            : "",
+          renderBookingDetailRow("Return Ride", returnRide),
+          renderBookingDetailRow("Mobility Type", mobility),
+        ]),
+        renderBookingDetailSection("Locations", [
+          renderBookingDetailRow("Pickup Address", pickupAddress),
+          renderBookingDetailRow("Facility Name", facility.name),
+          renderBookingDetailRow("Facility Address", facility.address),
+          renderBookingDetailRow("Drop-off Address", dropoffAddress),
+        ]),
+        renderBookingDetailSection("Facility Information", [
+          renderBookingDetailRow("Doctor", doctor),
+          renderBookingDetailRow("Clinic", clinic),
+          renderBookingDetailRow("Facility Phone", facility.phone, { type: "phone" }),
+        ]),
+        renderBookingDetailSection("Additional Notes", [
+          renderBookingDetailRow("Special Instructions", specialInstructions),
+          renderBookingDetailRow("Notes", tripNotes),
+        ]),
+      ].join("");
       return `
         <article class="booking-row" data-booking-id="${escapeHtml(booking.id)}">
           <div class="booking-card-details">
@@ -918,60 +1007,9 @@ function renderBookings(bookings) {
               <span class="booking-chip"><strong>Facility</strong>${escapeHtml(notProvided(facility.name))}</span>
             </div>
 
-            <dl class="booking-trip-details">
-              <div>
-                <dt>Trip type</dt>
-                <dd>${escapeHtml(rideType)}</dd>
-              </div>
-              <div>
-                <dt>Pickup</dt>
-                <dd>${escapeHtml(firstProvided(trip.pickupAddress, booking.pickupAddress) || "Not provided")}</dd>
-              </div>
-              <div>
-                <dt>Drop-off</dt>
-                <dd>${escapeHtml(firstProvided(trip.dropoffAddress, booking.dropoffAddress) || "Not provided")}</dd>
-              </div>
-              <div>
-                <dt>Facility</dt>
-                <dd>${escapeHtml(notProvided(facility.name))}</dd>
-              </div>
-              <div>
-                <dt>Date</dt>
-                <dd>${escapeHtml(notProvided(appointmentDate))}</dd>
-              </div>
-              <div>
-                <dt>Time</dt>
-                <dd>${escapeHtml(notProvided(appointmentTime))}${pickupTime && pickupTime !== appointmentTime ? ` <span class="booking-muted-detail">Pickup: ${escapeHtml(pickupTime)}</span>` : ""}</dd>
-              </div>
-              <div>
-                <dt>Return</dt>
-                <dd>${escapeHtml(trip.returnTrip ? returnDetails || "Return trip requested" : "One-way")}</dd>
-              </div>
-              <div>
-                <dt>Mobility</dt>
-                <dd>${escapeHtml(mobility)}${booking.accessibility?.wheelchair ? ` <span class="booking-muted-detail">Wheelchair needed: ${escapeHtml(yesNo(true))}</span>` : ""}</dd>
-              </div>
-              <div>
-                <dt>Appt type</dt>
-                <dd>${escapeHtml(notProvided(appointmentType))}</dd>
-              </div>
-              <div>
-                <dt>Clinic</dt>
-                <dd>${escapeHtml(notProvided(doctorOrClinic))}</dd>
-              </div>
-              <div>
-                <dt>Facility phone</dt>
-                <dd>${escapeHtml(notProvided(facility.phone))}</dd>
-              </div>
-              <div>
-                <dt>Instructions</dt>
-                <dd>${escapeHtml(notProvided(specialInstructions))}</dd>
-              </div>
-              <div>
-                <dt>Notes</dt>
-                <dd>${escapeHtml(tripNotes || "No notes provided.")}</dd>
-              </div>
-            </dl>
+            <div class="booking-detail-sections">
+              ${bookingDetailSections}
+            </div>
 
             <details class="booking-record-details">
               <summary>Details</summary>

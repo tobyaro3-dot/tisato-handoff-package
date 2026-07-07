@@ -140,6 +140,7 @@ export function validateBookingInput(input = {}) {
     returnDetails: cleanText(input.returnDetails, 240),
     appointmentType: cleanText(input.appointmentType, 120),
     facilityName: cleanText(input.facilityName, 160),
+    facilityAddress: cleanText(input.facilityAddress, 240),
     doctorName: cleanText(input.doctorName, 160),
     clinicName: cleanText(input.clinicName, 160),
     facilityPhone: normalizePhone(input.facilityPhone),
@@ -154,6 +155,7 @@ export function validateBookingInput(input = {}) {
   const facilityEmail = normalizeEmail(input.facility?.facilityEmail ?? input.facilityEmail);
   const facility = {
     facilityName: cleanText(input.facility?.facilityName ?? input.facilityName, 160),
+    facilityAddress: cleanText(input.facility?.facilityAddress ?? input.facilityAddress, 240),
     facilityContactPerson: cleanText(
       input.facility?.facilityContactPerson ?? input.facilityContactPerson,
       160

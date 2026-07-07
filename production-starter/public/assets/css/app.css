@@ -3440,6 +3440,68 @@ dd {
   overflow-wrap: anywhere;
 }
 
+.booking-detail-sections {
+  display: grid;
+  gap: 14px;
+}
+
+.booking-detail-section {
+  border-top: 1px solid rgba(223, 208, 232, 0.58);
+  display: grid;
+  gap: 9px;
+  padding-top: 13px;
+}
+
+.booking-detail-section:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.booking-detail-section h4 {
+  color: var(--purple-700);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.booking-detail-section dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.booking-detail-row {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 132px minmax(0, 1fr);
+}
+
+.booking-detail-row dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.booking-detail-row dd {
+  color: var(--ink);
+  line-height: 1.45;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.booking-detail-row a {
+  color: inherit;
+  font-weight: 900;
+  text-decoration-color: rgba(94, 39, 153, 0.28);
+  text-underline-offset: 3px;
+}
+
+.booking-detail-row a:hover {
+  color: var(--purple-700);
+}
+
 .booking-muted-detail {
   color: var(--muted);
   display: block;
@@ -4433,6 +4495,10 @@ dd {
   .metric-row,
   .booking-row,
   .customer-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-detail-row {
     grid-template-columns: 1fr;
   }
 

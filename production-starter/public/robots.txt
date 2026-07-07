@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /api/
+Disallow: /internal/
+Disallow: /tmp/
+Disallow: /temp/
+Disallow: /coverage/
+Disallow: /dist/
+Disallow: /build/
+Disallow: /*.map$
+Disallow: /*.log$
+Disallow: /.env
+
+Sitemap: https://www.tisatotransportationservices.com/sitemap.xml

@@ -2764,6 +2764,32 @@ dd {
   text-decoration-color: rgba(61, 26, 120, 0.46);
 }
 
+.footer-links-expanded {
+  align-items: flex-start;
+  gap: 18px 28px;
+  margin-top: 18px;
+}
+
+.footer-link-group {
+  min-width: 118px;
+}
+
+.footer-link-group strong {
+  color: var(--ink);
+  display: block;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.footer-link-group a {
+  font-size: 0.86rem;
+  font-weight: 800;
+  justify-content: center;
+  margin: 5px 0;
+}
+
 .booking-page-shell .site-footer {
   padding-top: 24px;
 }
@@ -2798,6 +2824,43 @@ dd {
   font-size: clamp(2.8rem, 8vw, 5.8rem);
   line-height: 0.95;
   margin: 0;
+}
+
+.page-breadcrumb {
+  color: rgba(46, 26, 71, 0.68);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin: 0 auto clamp(20px, 4vw, 34px);
+  max-width: 860px;
+  text-align: center;
+}
+
+.page-breadcrumb ol {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.page-breadcrumb li + li::before {
+  color: rgba(61, 26, 120, 0.34);
+  content: ">";
+  margin-right: 8px;
+}
+
+.page-breadcrumb a {
+  color: var(--purple);
+  text-decoration-color: rgba(61, 26, 120, 0.22);
+  text-underline-offset: 4px;
+}
+
+.page-breadcrumb [aria-current="page"] {
+  color: rgba(46, 26, 71, 0.72);
 }
 
 .privacy-updated {
@@ -2838,6 +2901,21 @@ dd {
 .privacy-card p:last-child,
 .privacy-contact p:last-child {
   margin-bottom: 0;
+}
+
+.privacy-card[data-related-title] p {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  justify-content: center;
+}
+
+.privacy-card[data-related-title] a {
+  color: var(--purple);
+  font-weight: 900;
+  text-decoration-color: rgba(61, 26, 120, 0.22);
+  text-underline-offset: 4px;
 }
 
 .privacy-contact {

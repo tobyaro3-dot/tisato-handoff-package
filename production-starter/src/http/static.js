@@ -35,6 +35,17 @@ async function findStaticFile(pathname) {
   }
 
   if (extname(pathname)) return null;
+
+  const indexPath = getSafePath(`${pathname.replace(/\/$/, "")}/index.html`);
+  if (indexPath) {
+    try {
+      const stat = await fs.stat(indexPath);
+      if (stat.isFile()) return indexPath;
+    } catch {
+      // Try clean .html fallback below.
+    }
+  }
+
   const htmlPath = getSafePath(`${pathname}.html`);
   if (!htmlPath) return null;
 

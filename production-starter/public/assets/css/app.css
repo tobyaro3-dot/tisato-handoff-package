@@ -1867,6 +1867,13 @@ dd {
   box-shadow: 0 22px 62px rgba(61, 26, 120, 0.1);
 }
 
+.service-area-map-column {
+  align-self: start;
+  display: grid;
+  gap: clamp(16px, 2vw, 22px);
+  min-width: 0;
+}
+
 .service-area-panel {
   display: grid;
   gap: 18px;
@@ -2157,11 +2164,11 @@ dd {
 }
 
 .service-area-cta {
-  align-items: center;
-  display: flex;
+  align-items: start;
+  display: grid;
   gap: 18px;
-  justify-content: space-between;
-  margin-top: clamp(18px, 3vw, 26px);
+  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: stretch;
   padding: clamp(18px, 3vw, 28px);
 }
 
@@ -2179,7 +2186,7 @@ dd {
   color: var(--muted);
   line-height: 1.55;
   margin-top: 6px;
-  max-width: 680px;
+  max-width: 52ch;
 }
 
 .service-area-cta-actions {
@@ -4371,7 +4378,7 @@ dd {
 
   .service-area-cta {
     align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .service-area-cta-actions {

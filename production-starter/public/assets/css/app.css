@@ -2982,15 +2982,16 @@ dd {
 
 .admin-logo-link {
   background: var(--paper);
-  border-radius: 18px;
-  display: block;
-  margin-bottom: 24px;
-  padding: 12px;
+  border-radius: 12px;
+  display: inline-flex;
+  margin-bottom: 22px;
+  padding: 7px 9px;
 }
 
 .admin-logo-link img {
   display: block;
-  width: 100%;
+  height: auto;
+  width: min(142px, 100%);
 }
 
 .admin-side-nav nav {

@@ -160,6 +160,14 @@ function formatTimestamp(value) {
   });
 }
 
+function formatAppointmentTimestamp(dateValue, timeValue) {
+  const date = normalizeFilterValue(dateValue);
+  const time = normalizeFilterValue(timeValue);
+  if (!date) return "Not available";
+  if (!time) return date;
+  return formatTimestamp(`${date}T${time}`);
+}
+
 function formatMoney(value) {
   const amount = Number(value || 0);
   return amount.toLocaleString([], {
@@ -943,6 +951,7 @@ function renderBookings(bookings) {
       const facility = facilityDetails(booking);
       const appointmentDate = firstProvided(trip.pickupDate, booking.appointmentDate, booking.pickupDate);
       const appointmentTime = firstProvided(trip.appointmentTime, booking.appointmentTime, trip.pickupTime, booking.pickupTime);
+      const appointmentDisplay = formatAppointmentTimestamp(appointmentDate, appointmentTime);
       const pickupTime = firstProvided(trip.pickupTime, booking.pickupTime);
       const rideType = tripTypeLabel(trip, booking);
       const mobility = mobilityLabel(booking);
@@ -964,8 +973,7 @@ function renderBookings(bookings) {
         renderBookingDetailSection("Trip Details", [
           renderBookingDetailRow("Trip Type", rideType),
           renderBookingDetailRow("Appointment Type", appointmentType),
-          renderBookingDetailRow("Appointment Date", appointmentDate),
-          renderBookingDetailRow("Appointment Time", appointmentTime),
+          renderBookingDetailRow("Appointment", appointmentDisplay),
           pickupTime && pickupTime !== appointmentTime
             ? renderBookingDetailRow("Pickup Time", pickupTime)
             : "",
@@ -1007,7 +1015,7 @@ function renderBookings(bookings) {
               <span class="booking-chip"><strong>Submitted</strong>${escapeHtml(submittedAt)}</span>
               <span class="booking-chip"><strong>Trip Type</strong>${escapeHtml(rideType)}</span>
               <span class="booking-chip"><strong>Mobility</strong>${escapeHtml(mobility)}</span>
-              <span class="booking-chip"><strong>Appointment</strong>${escapeHtml(notProvided(appointmentDate))}${appointmentTime ? ` at ${escapeHtml(appointmentTime)}` : ""}</span>
+              <span class="booking-chip"><strong>Appointment</strong>${escapeHtml(appointmentDisplay)}</span>
               <span class="booking-chip"><strong>Facility</strong>${escapeHtml(notProvided(facility.name))}</span>
             </div>
 
@@ -1112,7 +1120,7 @@ function renderCustomerDetail(detail) {
                 <strong>${escapeHtml(booking.id)}</strong>
                 <span class="status-pill">${escapeHtml(statusLabel(booking.status))}</span>
               </div>
-              <p>${escapeHtml(booking.appointmentDate || "No date")} ${escapeHtml(booking.appointmentTime || "")}</p>
+              <p>${escapeHtml(formatAppointmentTimestamp(booking.appointmentDate, booking.appointmentTime))}</p>
               <p><strong>Pickup:</strong> ${escapeHtml(booking.pickupAddress || "Not provided")}</p>
               <p><strong>Drop-off:</strong> ${escapeHtml(booking.dropoffAddress || "Not provided")}</p>
               <p>${escapeHtml(booking.tripType || "One-way")} &middot; ${escapeHtml(booking.mobilityType || "No mobility type")}</p>

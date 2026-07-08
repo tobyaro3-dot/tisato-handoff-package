@@ -2986,6 +2986,11 @@ dd {
   margin: 0;
 }
 
+.booking-status-note {
+  color: rgba(102, 95, 115, 0.82);
+  font-size: 0.92rem;
+}
+
 .booking-status-journey {
   display: flex;
   flex-wrap: wrap;

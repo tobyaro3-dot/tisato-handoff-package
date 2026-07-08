@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://www.tisatotransportationservices.com/thank-you">
   <link rel="icon" type="image/png" href="/assets/tisato-logo-header.png">
   <link rel="apple-touch-icon" href="/assets/tisato-logo-header.png">
-  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-chatbot-v1">
+  <link rel="stylesheet" href="/assets/css/app.css?v=tisato-booking-status-v1">
 </head>
 <body>
   <div class="ambient ambient-one"></div>
@@ -45,9 +45,14 @@
       </p>
       <dl>
         <div><dt>Booking ID</dt><dd id="bookingId">Pending</dd></div>
-        <div><dt>Status</dt><dd>Waiting for our team review</dd></div>
+        <div><dt>Status</dt><dd id="bookingStatus">Request Received</dd></div>
         <div><dt>Questions?</dt><dd>Call (844) 884-7286</dd></div>
       </dl>
+      <div class="booking-status-panel" aria-live="polite">
+        <span id="bookingStatusPill" class="status-pill status-request_received">Request Received</span>
+        <p id="bookingStatusDescription">We received your ride request and our team is reviewing it.</p>
+        <ol id="bookingStatusJourney" class="booking-status-journey" aria-label="Booking status journey"></ol>
+      </div>
       <div class="hero-actions">
         <a class="button primary" href="/">Submit Another Request</a>
         <a class="button ghost" href="tel:+18448847286">Call Our Team</a>
@@ -56,8 +61,72 @@
   </main>
 
   <script>
+    const statusSteps = [
+      ["request_received", "Request Received", "We received your ride request and our team is reviewing it."],
+      ["reviewing_details", "Reviewing Details", "Our team is reviewing your trip details and availability."],
+      ["ride_confirmed", "Ride Confirmed", "Your ride has been confirmed."],
+      ["driver_assigned", "Driver Assigned", "A driver has been assigned to your ride."],
+      ["on_the_way", "On the Way", "Your driver is on the way."],
+      ["ride_completed", "Ride Completed", "Your ride has been completed."],
+    ];
+
+    const cancelledStatus = ["cancelled", "Cancelled", "This ride request has been cancelled."];
     const params = new URLSearchParams(window.location.search);
-    document.getElementById("bookingId").textContent = params.get("bookingId") || "Unavailable";
+    const bookingId = params.get("bookingId") || "";
+    const bookingIdElement = document.getElementById("bookingId");
+    const statusElement = document.getElementById("bookingStatus");
+    const statusPill = document.getElementById("bookingStatusPill");
+    const statusDescription = document.getElementById("bookingStatusDescription");
+    const statusJourney = document.getElementById("bookingStatusJourney");
+
+    function renderStatusJourney(status) {
+      if (status === "cancelled") {
+        statusJourney.innerHTML = `<li class="is-cancelled">${cancelledStatus[1]}</li>`;
+        return;
+      }
+
+      const activeIndex = Math.max(0, statusSteps.findIndex(([value]) => value === status));
+      statusJourney.innerHTML = statusSteps
+        .map(([value, label], index) => {
+          const className = index < activeIndex ? "is-complete" : index === activeIndex ? "is-active" : "";
+          return `<li class="${className}" data-status="${value}">${label}</li>`;
+        })
+        .join("");
+    }
+
+    function setBookingStatus(status, label, description) {
+      statusElement.textContent = label;
+      statusPill.textContent = label;
+      statusPill.className = `status-pill status-${status}`;
+      statusDescription.textContent = description;
+      renderStatusJourney(status);
+    }
+
+    bookingIdElement.textContent = bookingId || "Unavailable";
+    renderStatusJourney("request_received");
+
+    if (bookingId) {
+      fetch(`/api/bookings/${encodeURIComponent(bookingId)}/status`, {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      })
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Unable to load status."))))
+        .then((result) => {
+          const booking = result.booking || {};
+          setBookingStatus(
+            booking.status || "request_received",
+            booking.statusLabel || "Request Received",
+            booking.statusDescription || "We received your ride request and our team is reviewing it."
+          );
+        })
+        .catch(() => {
+          setBookingStatus(
+            "request_received",
+            "Request Received",
+            "We received your ride request and our team is reviewing it."
+          );
+        });
+    }
   </script>
   <script src="/assets/js/site.js"></script>
   <script src="/assets/js/chatbot.js"></script>

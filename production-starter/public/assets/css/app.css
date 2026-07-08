@@ -2967,6 +2967,59 @@ dd {
   color: var(--muted);
 }
 
+.booking-status-panel {
+  background: rgba(255, 253, 248, 0.68);
+  border: 1px solid rgba(223, 208, 232, 0.72);
+  border-radius: 18px;
+  display: grid;
+  gap: 12px;
+  margin: 0 0 30px;
+  padding: 16px;
+}
+
+.booking-status-panel .status-pill {
+  margin-bottom: 0;
+  width: fit-content;
+}
+
+.booking-status-panel p {
+  margin: 0;
+}
+
+.booking-status-journey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.booking-status-journey li {
+  background: rgba(239, 230, 248, 0.48);
+  border: 1px solid rgba(223, 208, 232, 0.8);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 7px 10px;
+}
+
+.booking-status-journey li.is-complete,
+.booking-status-journey li.is-active {
+  background: rgba(91, 43, 140, 0.12);
+  color: var(--purple-dark);
+}
+
+.booking-status-journey li.is-active {
+  box-shadow: inset 0 0 0 1px rgba(91, 43, 140, 0.18);
+}
+
+.booking-status-journey li.is-cancelled {
+  background: #f8e7e4;
+  color: #a8403c;
+}
+
 .admin-reference-shell {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
@@ -3555,21 +3608,35 @@ dd {
   text-transform: uppercase;
 }
 
+.status-request_received,
 .status-new_request {
   background: #efe6f8;
   color: var(--purple);
 }
 
+.status-reviewing_details,
 .status-contacted {
   background: #fff3d8;
   color: #876017;
 }
 
+.status-ride_confirmed,
 .status-scheduled {
   background: #e9f2ff;
   color: #2c5f8e;
 }
 
+.status-driver_assigned {
+  background: #e9f5f7;
+  color: #2b6d77;
+}
+
+.status-on_the_way {
+  background: #eaf5e8;
+  color: #3f7c35;
+}
+
+.status-ride_completed,
 .status-completed {
   background: #e7f4ed;
   color: #2f7b54;

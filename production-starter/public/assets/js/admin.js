@@ -49,18 +49,22 @@ const adminGlobalSearch = document.getElementById("adminGlobalSearch");
 const adminGlobalSearchResults = document.getElementById("adminGlobalSearchResults");
 
 const statuses = [
-  "new_request",
-  "contacted",
-  "scheduled",
-  "completed",
+  "request_received",
+  "reviewing_details",
+  "ride_confirmed",
+  "driver_assigned",
+  "on_the_way",
+  "ride_completed",
   "cancelled",
 ];
 
 const statusLabels = {
-  new_request: "New Request",
-  contacted: "Contacted",
-  scheduled: "Scheduled",
-  completed: "Completed",
+  request_received: "Request Received",
+  reviewing_details: "Reviewing Details",
+  ride_confirmed: "Ride Confirmed",
+  driver_assigned: "Driver Assigned",
+  on_the_way: "On the Way",
+  ride_completed: "Ride Completed",
   cancelled: "Cancelled",
 };
 
@@ -135,14 +139,14 @@ async function requestJson(path, options = {}) {
 }
 
 function statusOptions(current) {
-  const selectedStatus = statuses.includes(current) ? current : "new_request";
+  const selectedStatus = statuses.includes(current) ? current : "request_received";
   return statuses
     .map((status) => `<option value="${status}" ${status === selectedStatus ? "selected" : ""}>${statusLabels[status]}</option>`)
     .join("");
 }
 
 function statusLabel(status) {
-  return statusLabels[status] || statusLabels.new_request;
+  return statusLabels[status] || statusLabels.request_received;
 }
 
 function formatTimestamp(value) {
@@ -913,9 +917,9 @@ function renderMetrics(bookings) {
 
   metrics.innerHTML = [
     ["Total", bookings.length],
-    ["New Request", counts.new_request || 0],
-    ["Scheduled", counts.scheduled || 0],
-    ["Completed", counts.completed || 0],
+    ["Request Received", counts.request_received || 0],
+    ["Confirmed", counts.ride_confirmed || 0],
+    ["Completed", counts.ride_completed || 0],
   ]
     .map(([label, value]) => `<article class="metric"><span>${label}</span><strong>${value}</strong></article>`)
     .join("");
@@ -932,7 +936,7 @@ function renderBookings(bookings) {
       const passenger = booking.passenger || {};
       const trip = booking.trip || {};
       const passengerName = `${passenger.firstName || "Unknown"} ${passenger.lastName || "Passenger"}`;
-      const status = statuses.includes(booking.status) ? booking.status : "new_request";
+      const status = statuses.includes(booking.status) ? booking.status : "request_received";
       const recordState = booking.rideDetails?.recordState || "active";
       const archived = recordState === "archived";
       const submittedAt = formatTimestamp(booking.createdAt || booking.submittedAt || booking.updatedAt);

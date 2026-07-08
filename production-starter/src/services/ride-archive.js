@@ -40,11 +40,17 @@ function cityFromAddress(address = "") {
 
 function statusLabel(value) {
   const labels = {
-    new_request: "New Request",
-    contacted: "Contacted",
-    scheduled: "Scheduled",
-    completed: "Completed",
+    request_received: "Request Received",
+    reviewing_details: "Reviewing Details",
+    ride_confirmed: "Ride Confirmed",
+    driver_assigned: "Driver Assigned",
+    on_the_way: "On the Way",
+    ride_completed: "Ride Completed",
     cancelled: "Cancelled",
+    new_request: "Request Received",
+    contacted: "Reviewing Details",
+    scheduled: "Ride Confirmed",
+    completed: "Ride Completed",
     canceled: "Canceled",
     no_show: "No-show",
     requested: "Requested",
@@ -298,7 +304,7 @@ export async function createManualRideArchiveRecord(input, admin) {
   const now = new Date().toISOString();
   let booking = {
     id: await createUniqueManualRideId(),
-    status: "new_request",
+    status: "request_received",
     passenger: validation.value.passenger,
     trip: validation.value.trip,
     accessibility: validation.value.accessibility,

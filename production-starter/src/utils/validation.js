@@ -229,10 +229,12 @@ export function validateBookingInput(input = {}) {
 
 export function validateStatusInput(input = {}) {
   const allowedStatuses = new Set([
-    "new_request",
-    "contacted",
-    "scheduled",
-    "completed",
+    "request_received",
+    "reviewing_details",
+    "ride_confirmed",
+    "driver_assigned",
+    "on_the_way",
+    "ride_completed",
     "cancelled",
   ]);
   const status = cleanText(input.status, 40);

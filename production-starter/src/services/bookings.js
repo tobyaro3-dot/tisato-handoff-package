@@ -29,19 +29,58 @@ async function createUniqueBookingId() {
 }
 
 const STATUS_VALUES = new Set([
-  "new_request",
-  "contacted",
-  "scheduled",
-  "completed",
+  "request_received",
+  "reviewing_details",
+  "ride_confirmed",
+  "driver_assigned",
+  "on_the_way",
+  "ride_completed",
   "cancelled",
 ]);
 
+const STATUS_DETAILS = {
+  request_received: {
+    label: "Request Received",
+    description: "We received your ride request and our team is reviewing it.",
+  },
+  reviewing_details: {
+    label: "Reviewing Details",
+    description: "Our team is reviewing your trip details and availability.",
+  },
+  ride_confirmed: {
+    label: "Ride Confirmed",
+    description: "Your ride has been confirmed.",
+  },
+  driver_assigned: {
+    label: "Driver Assigned",
+    description: "A driver has been assigned to your ride.",
+  },
+  on_the_way: {
+    label: "On the Way",
+    description: "Your driver is on the way.",
+  },
+  ride_completed: {
+    label: "Ride Completed",
+    description: "Your ride has been completed.",
+  },
+  cancelled: {
+    label: "Cancelled",
+    description: "This ride request has been cancelled.",
+  },
+};
+
 function normalizeStatus(value) {
   const status = String(value || "").trim().toLowerCase().replaceAll(" ", "_");
-  if (status === "pending") return "new_request";
-  if (status === "needs_information") return "contacted";
-  if (status === "confirmed" || status === "in_progress") return "scheduled";
-  return STATUS_VALUES.has(status) ? status : "new_request";
+  if (status === "pending" || status === "new_request") return "request_received";
+  if (status === "needs_information" || status === "contacted") return "reviewing_details";
+  if (status === "confirmed" || status === "scheduled") return "ride_confirmed";
+  if (status === "in_progress") return "on_the_way";
+  if (status === "completed") return "ride_completed";
+  return STATUS_VALUES.has(status) ? status : "request_received";
+}
+
+function statusDetail(status) {
+  return STATUS_DETAILS[normalizeStatus(status)] || STATUS_DETAILS.request_received;
 }
 
 function splitName(value) {
@@ -174,7 +213,7 @@ export async function createBooking(request, input) {
   const now = new Date().toISOString();
   let booking = {
     id: await createUniqueBookingId(),
-    status: "new_request",
+    status: "request_received",
     ...validation.value,
     adminNotes: [],
     source: {
@@ -232,6 +271,34 @@ export async function createBooking(request, input) {
 
 export async function listBookings() {
   return (await getBookings()).map(normalizeBookingRecord);
+}
+
+export async function getPublicBookingStatus(id) {
+  const booking = (await listBookings()).find((record) => record.id === String(id || ""));
+  if (!booking) {
+    return {
+      status: 404,
+      body: {
+        success: false,
+        error: "Booking not found.",
+      },
+    };
+  }
+
+  const detail = statusDetail(booking.status);
+  return {
+    status: 200,
+    body: {
+      success: true,
+      booking: {
+        id: booking.id,
+        status: booking.status,
+        statusLabel: detail.label,
+        statusDescription: detail.description,
+        updatedAt: booking.updatedAt,
+      },
+    },
+  };
 }
 
 export async function updateBookingStatus(id, input, admin) {

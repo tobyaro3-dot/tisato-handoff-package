@@ -91,11 +91,13 @@ function normalizedStatus(ride) {
 }
 
 function isCompleted(ride) {
-  return normalizedStatus(ride) === "completed";
+  const status = normalizedStatus(ride);
+  return status === "completed" || status === "ride_completed";
 }
 
 function isScheduled(ride) {
-  return normalizedStatus(ride) === "scheduled";
+  const status = normalizedStatus(ride);
+  return status === "scheduled" || status === "ride_confirmed" || status === "driver_assigned" || status === "on_the_way";
 }
 
 function isCanceled(ride) {

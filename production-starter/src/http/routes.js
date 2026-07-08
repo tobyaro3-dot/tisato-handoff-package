@@ -1,6 +1,7 @@
 import {
   bookingStorageUnavailableResponse,
   createBooking,
+  getPublicBookingStatus,
   listBookings,
   updateBookingStatus,
 } from "../services/bookings.js";
@@ -26,6 +27,17 @@ export function registerRoutes(router) {
   router.register("POST", "/api/bookings", async (request, response) => {
     const body = await readJsonBody(request);
     const result = await createBooking(request, body);
+    json(response, result.status, result.body);
+  });
+
+  router.register("GET", "/api/bookings/:id/status", async (_request, response, context) => {
+    const unavailable = bookingStorageUnavailableResponse();
+    if (unavailable) {
+      json(response, unavailable.status, unavailable.body);
+      return;
+    }
+
+    const result = await getPublicBookingStatus(context.params.id);
     json(response, result.status, result.body);
   });
 
